@@ -40,14 +40,14 @@ namespace WindowsFormsApp3
                 {
                     if (My_SerialPort.BytesToRead > 0)
                     {
-                       
                         Int32 length = My_SerialPort.Read(buffer, 0, buffer.Length);
-
+                        
+                        Array.Resize(ref buffer, length);
                         string buf = Encoding.ASCII.GetString(buffer);
-                        //object p = Convert.ToHexString(buffer);
                         label1.Text += buf;
                         label6.Text += string.Join(" ", buffer);
                         label6.Text += "\n";
+                        Array.Resize(ref buffer, 1024);
                         /*
                         Array.Resize(ref buffer, length);
                         Display d = new Display(ConsoleShow);
@@ -56,7 +56,7 @@ namespace WindowsFormsApp3
                         */
                     }
 
-                    //Thread.Sleep(20);
+                    Thread.Sleep(20);
                 }
             }
             catch (Exception ex)
@@ -161,7 +161,6 @@ namespace WindowsFormsApp3
         Byte batteryIndex =0, batteryIndexCks=0x1b;
         private void button2_Click(object sender, EventArgs e)
         {
-            
             try
             {
                 Byte[] buffer = new Byte[5] {/*Length*/ 0x05,/*Cmd*/ 0xB0,/*index*/ 0x30,/*battery*/ batteryIndex, batteryIndexCks };
