@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,12 @@ namespace WindowsFormsApp3
         private bool Console_receiving = false;
         private Thread t;
 
+        private static string folder = System.Environment.CurrentDirectory;
+        private static string fileName = "\\batteryInformation.txt";
+        // Fullpath. 
+        string fullPath = folder + fileName;
+        //File.WriteAllLines(fullPath, " ");
+
         public Form1()
         {
             InitializeComponent();
@@ -27,6 +34,13 @@ namespace WindowsFormsApp3
         {
 
         }
+
+        public String GetTimestamp(DateTime value)
+        {
+            return value.ToString("yyyyMMddHHmmssffff");
+        }
+        //  ...later on in the code
+        //String timeStamp = GetTimestamp(new DateTime());
 
         // 接收資料
         private void DoReceive()
@@ -54,8 +68,18 @@ namespace WindowsFormsApp3
                         this.Invoke(d, new Object[] { buf });
                         Array.Resize(ref buffer, 1024);
                         */
-                    }
 
+                        String timeStamp = GetTimestamp(DateTime.Now);
+                        label5.Text = timeStamp;
+
+                        // Add text to file
+                        File.AppendAllText(fullPath, Environment.NewLine+"time -> " + timeStamp);
+                        File.AppendAllText(fullPath, Environment.NewLine + buf);
+                        File.AppendAllText(fullPath, Environment.NewLine + string.Join(" ", buffer));
+                        File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
+                        
+                        Array.Resize(ref buffer, 1024);
+                    }
                     Thread.Sleep(20);
                 }
             }
@@ -142,6 +166,25 @@ namespace WindowsFormsApp3
                     testCommand();
                 }
             }
+
+            try
+            {
+                // Check if file already exists. If yes, delete it.     
+                if (File.Exists(fullPath))
+                {
+                    File.Delete(fullPath);
+                }
+
+                // Create a new file     
+                using (FileStream fs = File.Create(fullPath))
+                {
+                }
+            }
+            catch (Exception Ex)
+            {
+                Console.WriteLine(Ex.ToString());
+            }
+
         }
 
         public void testCommand()
