@@ -188,6 +188,9 @@ namespace WindowsFormsApp3
 
         public void testCommand()
         {
+            label1.Text = "";
+            label6.Text = "";
+
             try
             {
                 Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x00, 0x5c };
@@ -203,32 +206,40 @@ namespace WindowsFormsApp3
         Byte batteryIndex =0, batteryIndexCks=0x1b, batteryState=0x30;
         private void button2_Click(object sender, EventArgs e)
         {
-            try
+            batteryIndex = 0;
+            batteryIndexCks = 0x1b;
+            batteryState = 0x30;
+
+            for (int i = 0; i < 12; i++)
             {
-                Byte[] buffer = new Byte[5] {/*Length*/ 0x05,/*Cmd*/ 0xB0,/*index*/ batteryState,/*battery*/ batteryIndex, batteryIndexCks };
-               My_SerialPort.Write(buffer, 0, buffer.Length);
-            }
-            catch (Exception ex)
-            {
-                CloseComport();
-                MessageBox.Show(ex.Message);
-            }
+                try
+                {   //                          Length  Cmd     index       battery         checksum
+                    Byte[] buffer = new Byte[5] { 0x05, 0xB0, batteryState, batteryIndex, batteryIndexCks };
+                    My_SerialPort.Write(buffer, 0, buffer.Length);
+                }
+                catch (Exception ex)
+                {
+                    CloseComport();
+                    MessageBox.Show(ex.Message);
+                }
 
-            label4.Text = "battery index: " + batteryIndex.ToString();
+                label4.Text = "battery index: " + batteryIndex.ToString();
 
-            batteryIndex++;
-            batteryIndexCks--;
+                batteryIndex++;
+                batteryIndexCks--;
 
-            if (batteryIndex == 4)
-            {
-                batteryIndex = 0;
-                // batteryIndexCks = 0x1b;
-                batteryIndexCks = (byte)(batteryIndexCks + 0x03);
+                if (batteryIndex == 4)
+                {
+                    batteryIndex = 0;
+                    // batteryIndexCks = 0x1b;
+                    batteryIndexCks = (byte)(batteryIndexCks + 0x03);
 
-                batteryState++;
-                if (batteryState == 0x33) batteryState = 0x30;
+                    batteryState++;
+                    if (batteryState == 0x33) batteryState = 0x30;
 
-               // batteryIndexCks = (byte)(batteryIndexCks - (batteryState - 0x30) - 1); //batteryState is base 0x30
+                    // batteryIndexCks = (byte)(batteryIndexCks - (batteryState - 0x30) - 1); //batteryState is base 0x30
+                }
+                Thread.Sleep(1000);
             }
         }
 
@@ -250,6 +261,9 @@ namespace WindowsFormsApp3
 
         private void testCommand1_Click(object sender, EventArgs e)
         {
+            label1.Text = "";
+            label6.Text = "";
+            
             try
             {
                 Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x01, 0x5b };
