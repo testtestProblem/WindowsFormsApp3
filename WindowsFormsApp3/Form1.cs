@@ -72,7 +72,7 @@ namespace WindowsFormsApp3
                         label5.Text = timeStamp;
 
                         // Add text to file
-                        File.AppendAllText(fullPath, Environment.NewLine+"time -> " + timeStamp);
+                        File.AppendAllText(fullPath, Environment.NewLine + "time -> " + timeStamp);
                         File.AppendAllText(fullPath, Environment.NewLine + buf);
                         File.AppendAllText(fullPath, Environment.NewLine + string.Join(" ", buffer));
                         File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
@@ -222,12 +222,13 @@ namespace WindowsFormsApp3
             if (batteryIndex == 4)
             {
                 batteryIndex = 0;
-                batteryIndexCks = 0x1b;
+                // batteryIndexCks = 0x1b;
+                batteryIndexCks = (byte)(batteryIndexCks + 0x03);
 
                 batteryState++;
                 if (batteryState == 0x33) batteryState = 0x30;
 
-                batteryIndexCks = (byte)(batteryIndexCks +(0x30-batteryState-1)); //batteryState is base 0x30
+               // batteryIndexCks = (byte)(batteryIndexCks - (batteryState - 0x30) - 1); //batteryState is base 0x30
             }
         }
 
