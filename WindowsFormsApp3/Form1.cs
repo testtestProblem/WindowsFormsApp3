@@ -61,7 +61,6 @@ namespace WindowsFormsApp3
                         label1.Text += buf;
                         label6.Text += string.Join(" ", buffer);
                         label6.Text += "\n";
-                        Array.Resize(ref buffer, 1024);
                         /*
                         Array.Resize(ref buffer, length);
                         Display d = new Display(ConsoleShow);
@@ -201,12 +200,12 @@ namespace WindowsFormsApp3
             }
         }
 
-        Byte batteryIndex =0, batteryIndexCks=0x1b;
+        Byte batteryIndex =0, batteryIndexCks=0x1b, batteryState=0x30;
         private void button2_Click(object sender, EventArgs e)
         {
             try
             {
-                Byte[] buffer = new Byte[5] {/*Length*/ 0x05,/*Cmd*/ 0xB0,/*index*/ 0x30,/*battery*/ batteryIndex, batteryIndexCks };
+                Byte[] buffer = new Byte[5] {/*Length*/ 0x05,/*Cmd*/ 0xB0,/*index*/ batteryState,/*battery*/ batteryIndex, batteryIndexCks };
                My_SerialPort.Write(buffer, 0, buffer.Length);
             }
             catch (Exception ex)
@@ -224,6 +223,11 @@ namespace WindowsFormsApp3
             {
                 batteryIndex = 0;
                 batteryIndexCks = 0x1b;
+
+                batteryState++;
+                if (batteryState == 0x33) batteryState = 0x30;
+
+                batteryIndexCks = (byte)(batteryIndexCks +(0x30-batteryState-1)); //batteryState is base 0x30
             }
         }
 
