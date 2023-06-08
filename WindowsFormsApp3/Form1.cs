@@ -17,7 +17,7 @@ namespace WindowsFormsApp3
     {
         private SerialPort My_SerialPort;
         private bool Console_receiving = false;
-        private Thread t;
+        private Thread t, sendData;
 
         private static string folder = System.Environment.CurrentDirectory;
         private static string fileName = "\\batteryInformation.txt";
@@ -37,16 +37,16 @@ namespace WindowsFormsApp3
 
         public String GetTimestamp(DateTime value)
         {
-            return value.ToString("yyyyMMddHHmmssffff");
+            return value.ToString("yyyy/MM/dd_HH:mm:ss");
         }
         //  ...later on in the code
         //String timeStamp = GetTimestamp(new DateTime());
 
         // 接收資料
+        //lock
         private void DoReceive()
         {
             Byte[] buffer = new Byte[32];
-
             try
             {
                 while (Console_receiving)
@@ -80,6 +80,7 @@ namespace WindowsFormsApp3
                         Array.Resize(ref buffer, 1024);
                     }
                     Thread.Sleep(20);
+                    lockForWait = 0;
                 }
             }
             catch (Exception ex)
@@ -159,7 +160,7 @@ namespace WindowsFormsApp3
 
                     //開啟執行續做接收動作
                     t = new Thread(DoReceive);
-                    t.IsBackground = true;
+                    //t.IsBackground = true;
                     t.Start();
 
                     testCommand();
@@ -203,8 +204,9 @@ namespace WindowsFormsApp3
             }
         }
 
-        Byte batteryIndex =0, batteryIndexCks=0x1b, batteryState=0x30;
-        private void button2_Click(object sender, EventArgs e)
+
+        Byte batteryIndex = 0, batteryIndexCks = 0x1b, batteryState = 0x30, lockForWait = 0;
+        void readBatteryState()
         {
             batteryIndex = 0;
             batteryIndexCks = 0x1b;
@@ -212,6 +214,7 @@ namespace WindowsFormsApp3
 
             for (int i = 0; i < 12; i++)
             {
+                lockForWait = 1;
                 try
                 {   //                          Length  Cmd     index       battery         checksum
                     Byte[] buffer = new Byte[5] { 0x05, 0xB0, batteryState, batteryIndex, batteryIndexCks };
@@ -239,8 +242,21 @@ namespace WindowsFormsApp3
 
                     // batteryIndexCks = (byte)(batteryIndexCks - (batteryState - 0x30) - 1); //batteryState is base 0x30
                 }
-                Thread.Sleep(1000);
+                Thread.Sleep(350);
             }
+            sendData.Abort();
+        }
+
+       
+        private void button2_Click(object sender, EventArgs e)
+        {
+            sendData = new Thread(readBatteryState);
+            sendData.Start();
+               // while (lockForWait ==1)
+               //{
+               //   ;
+               //}
+
         }
 
         private void label2_Click(object sender, EventArgs e)
