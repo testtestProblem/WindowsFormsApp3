@@ -34,81 +34,12 @@ namespace WindowsFormsApp3
         {
 
         }
-
+        
         public String GetTimestamp(DateTime value)
         {
             return value.ToString("yyyy/MM/dd_HH:mm:ss");
         }
-        //  ...later on in the code
-        //String timeStamp = GetTimestamp(new DateTime());
 
-        // 接收資料
-        //lock
-        private void DoReceive()
-        {
-            Byte[] buffer = new Byte[32];
-            try
-            {
-                while (Console_receiving)
-                //while (My_SerialPort.DataReceived)
-                {
-                    if (My_SerialPort.BytesToRead > 0)
-                    {
-                        Int32 length = My_SerialPort.Read(buffer, 0, buffer.Length);
-                        
-                        Array.Resize(ref buffer, length);
-                        string buf = Encoding.ASCII.GetString(buffer);
-                        label1.Text += buf;
-                        label6.Text += string.Join(" ", buffer);
-                        label6.Text += "\n";
-                        /*
-                        Array.Resize(ref buffer, length);
-                        Display d = new Display(ConsoleShow);
-                        this.Invoke(d, new Object[] { buf });
-                        Array.Resize(ref buffer, 1024);
-                        */
-
-                        String timeStamp = GetTimestamp(DateTime.Now);
-                        label5.Text = timeStamp;
-
-                        // Add text to file
-                        File.AppendAllText(fullPath, Environment.NewLine + "time -> " + timeStamp);
-                        File.AppendAllText(fullPath, Environment.NewLine + buf);
-                        File.AppendAllText(fullPath, Environment.NewLine + string.Join(" ", buffer));
-                        File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
-                        
-                        Array.Resize(ref buffer, 1024);
-                    }
-                    Thread.Sleep(20);
-                    lockForWait = 0;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        //Console 發送資料
-        public void SendData(Object sendBuffer)
-        {
-            if (sendBuffer != null)
-            {
-                Byte[] buffer = sendBuffer as Byte[];
-
-                try
-                {
-                    My_SerialPort.Write(buffer, 0, buffer.Length);
-                }
-                catch (Exception ex)
-                {
-                    CloseComport();
-                    MessageBox.Show(ex.Message);
-                }
-            }
-        }
-
-        //關閉 Console
         public void CloseComport()
         {
             try
@@ -122,6 +53,80 @@ namespace WindowsFormsApp3
 
             Console_receiving = false;
             t.Abort();
+        }
+
+        Byte getDataType = 0;
+        private void DoReceive()
+        {
+            Byte[] buffer = new Byte[32];
+            try
+            {
+                while (Console_receiving)
+                //while (My_SerialPort.DataReceived)
+                {
+                    if (My_SerialPort.BytesToRead > 0)
+                    {
+                        Int32 length = My_SerialPort.Read(buffer, 0, buffer.Length);
+
+                        String timeStamp = GetTimestamp(DateTime.Now);
+                        label5.Text = timeStamp;
+                        File.AppendAllText(fullPath, Environment.NewLine + "time -> " + timeStamp);
+
+                        Array.Resize(ref buffer, length);
+
+                        if (getDataType == 0)
+                        {
+                            string buf = Encoding.ASCII.GetString(buffer);
+                            label1.Text += buf;
+
+                            // Add text to file
+                            File.AppendAllText(fullPath, Environment.NewLine + buf);
+                            //File.AppendAllText(fullPath, Environment.NewLine + string.Join(" ", buffer));
+                        }
+                        else if (getDataType == 1)
+                        {
+                            string buf = Encoding.ASCII.GetString(buffer);
+                            label1.Text +=  buf;
+
+                            // Add text to file
+                            File.AppendAllText(fullPath, Environment.NewLine + buf);
+                            //File.AppendAllText(fullPath, Environment.NewLine + string.Join(" ", buffer));
+                        }
+                        else if (getDataType == 2)
+                        {
+                            if (buffer[1] == 0x04 || buffer[1] == 0x20 || buffer[1] == 0x00 || buffer[1] == 0xDD)
+                            {
+                                label1.Text += "battery " + (batteryIndex).ToString() + ": " + " no battery\n";
+                                File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
+                            }
+                            else
+                            {
+                                if ((batteryState) == 0x30)
+                                {
+                                    label1.Text += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
+                                    File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
+                                }
+                                else if ((batteryState) == 0x31)
+                                {
+                                    label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mV\n";
+                                    File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
+                                }
+                                else if ((batteryState) == 0x32)
+                                {
+                                    label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mA\n";
+                                    File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
+                                }
+                            }
+                        }
+                        File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
+                        Array.Resize(ref buffer, 1024);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -166,7 +171,6 @@ namespace WindowsFormsApp3
                     testCommand();
                 }
             }
-
             try
             {
                 // Check if file already exists. If yes, delete it.     
@@ -174,7 +178,6 @@ namespace WindowsFormsApp3
                 {
                     File.Delete(fullPath);
                 }
-
                 // Create a new file     
                 using (FileStream fs = File.Create(fullPath))
                 {
@@ -184,14 +187,14 @@ namespace WindowsFormsApp3
             {
                 Console.WriteLine(Ex.ToString());
             }
-
         }
 
         public void testCommand()
         {
             label1.Text = "";
-            label6.Text = "";
+            label1.Text += "BIOS BOM: ";
 
+            getDataType = 0;
             try
             {
                 Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x00, 0x5c };
@@ -205,16 +208,17 @@ namespace WindowsFormsApp3
         }
 
 
-        Byte batteryIndex = 0, batteryIndexCks = 0x1b, batteryState = 0x30, lockForWait = 0;
+        Byte batteryIndex = 0, batteryIndexCks = 0x1b, batteryState = 0x30;
         void readBatteryState()
         {
             batteryIndex = 0;
             batteryIndexCks = 0x1b;
             batteryState = 0x30;
 
+            label1.Text = "";
+            getDataType = 2;
             for (int i = 0; i < 12; i++)
             {
-                lockForWait = 1;
                 try
                 {   //                          Length  Cmd     index       battery         checksum
                     Byte[] buffer = new Byte[5] { 0x05, 0xB0, batteryState, batteryIndex, batteryIndexCks };
@@ -225,6 +229,7 @@ namespace WindowsFormsApp3
                     CloseComport();
                     MessageBox.Show(ex.Message);
                 }
+                Thread.Sleep(550);
 
                 label4.Text = "battery index: " + batteryIndex.ToString();
 
@@ -242,44 +247,28 @@ namespace WindowsFormsApp3
 
                     // batteryIndexCks = (byte)(batteryIndexCks - (batteryState - 0x30) - 1); //batteryState is base 0x30
                 }
-                Thread.Sleep(350);
+                
             }
             sendData.Abort();
         }
-
        
         private void button2_Click(object sender, EventArgs e)
         {
             sendData = new Thread(readBatteryState);
             sendData.Start();
-               // while (lockForWait ==1)
-               //{
-               //   ;
-               //}
-
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             label1.Text = "";
-            label6.Text = "";
         }
 
         private void testCommand1_Click(object sender, EventArgs e)
         {
             label1.Text = "";
-            label6.Text = "";
-            
+            label1.Text += "BIOS product name: ";
+
+            getDataType = 1;
             try
             {
                 Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x01, 0x5b };

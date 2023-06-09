@@ -37,7 +37,6 @@ namespace WindowsFormsApp3
             this.label3 = new System.Windows.Forms.Label();
             this.testCommand1 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -83,7 +82,6 @@ namespace WindowsFormsApp3
             this.label2.Size = new System.Drawing.Size(73, 14);
             this.label2.TabIndex = 3;
             this.label2.Text = "receive data";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
             // comboBox1
             // 
@@ -110,7 +108,6 @@ namespace WindowsFormsApp3
             this.comboBox1.Size = new System.Drawing.Size(63, 20);
             this.comboBox1.TabIndex = 4;
             this.comboBox1.Text = "COM0";
-            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // label3
             // 
@@ -141,16 +138,6 @@ namespace WindowsFormsApp3
             this.label4.TabIndex = 7;
             this.label4.Text = "battery index :??";
             // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("PMingLiU", 20F);
-            this.label6.Location = new System.Drawing.Point(23, 252);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(95, 27);
-            this.label6.TabIndex = 8;
-            this.label6.Text = "unknow";
-            // 
             // button3
             // 
             this.button3.Location = new System.Drawing.Point(201, 116);
@@ -178,7 +165,6 @@ namespace WindowsFormsApp3
             this.ClientSize = new System.Drawing.Size(647, 485);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.button3);
-            this.Controls.Add(this.label6);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.testCommand1);
             this.Controls.Add(this.label3);
@@ -205,7 +191,6 @@ namespace WindowsFormsApp3
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button testCommand1;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Label label5;
     }
