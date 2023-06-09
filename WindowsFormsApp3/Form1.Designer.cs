@@ -64,10 +64,10 @@ namespace WindowsFormsApp3
             // 
             // button2
             // 
-            this.button2.Font = new System.Drawing.Font("PMingLiU", 20F);
+            this.button2.Font = new System.Drawing.Font("PMingLiU", 16F);
             this.button2.Location = new System.Drawing.Point(28, 90);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(167, 49);
+            this.button2.Size = new System.Drawing.Size(159, 49);
             this.button2.TabIndex = 2;
             this.button2.Text = "check battery";
             this.button2.UseVisualStyleBackColor = true;
@@ -121,9 +121,10 @@ namespace WindowsFormsApp3
             // 
             // testCommand1
             // 
-            this.testCommand1.Location = new System.Drawing.Point(201, 90);
+            this.testCommand1.Font = new System.Drawing.Font("PMingLiU", 12F);
+            this.testCommand1.Location = new System.Drawing.Point(193, 90);
             this.testCommand1.Name = "testCommand1";
-            this.testCommand1.Size = new System.Drawing.Size(75, 23);
+            this.testCommand1.Size = new System.Drawing.Size(50, 23);
             this.testCommand1.TabIndex = 6;
             this.testCommand1.Text = "test";
             this.testCommand1.UseVisualStyleBackColor = true;
@@ -132,7 +133,7 @@ namespace WindowsFormsApp3
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(282, 95);
+            this.label4.Location = new System.Drawing.Point(252, 127);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(82, 12);
             this.label4.TabIndex = 7;
@@ -140,9 +141,9 @@ namespace WindowsFormsApp3
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(201, 116);
+            this.button3.Location = new System.Drawing.Point(193, 116);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.Size = new System.Drawing.Size(50, 23);
             this.button3.TabIndex = 9;
             this.button3.Text = "clear";
             this.button3.UseVisualStyleBackColor = true;
@@ -152,7 +153,7 @@ namespace WindowsFormsApp3
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("PMingLiU", 20F);
-            this.label5.Location = new System.Drawing.Point(324, 34);
+            this.label5.Location = new System.Drawing.Point(249, 90);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(95, 27);
             this.label5.TabIndex = 10;
@@ -162,7 +163,7 @@ namespace WindowsFormsApp3
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(647, 485);
+            this.ClientSize = new System.Drawing.Size(534, 711);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.label4);
