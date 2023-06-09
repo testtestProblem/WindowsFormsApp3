@@ -62,64 +62,72 @@ namespace WindowsFormsApp3
             try
             {
                 while (Console_receiving)
-                //while (My_SerialPort.DataReceived)
                 {
                     if (My_SerialPort.BytesToRead > 0)
                     {
                         Int32 length = My_SerialPort.Read(buffer, 0, buffer.Length);
 
-                        String timeStamp = GetTimestamp(DateTime.Now);
-                        label5.Text = timeStamp;
-                        File.AppendAllText(fullPath, Environment.NewLine + "time -> " + timeStamp);
-
                         Array.Resize(ref buffer, length);
 
                         if (getDataType == 0)
                         {
+                            String timeStamp = GetTimestamp(DateTime.Now);
+                            label5.Text = timeStamp;
+                            File.AppendAllText(fullPath, Environment.NewLine + "time -> " + timeStamp);
+
                             string buf = Encoding.ASCII.GetString(buffer);
                             label1.Text += buf;
 
                             // Add text to file
                             File.AppendAllText(fullPath, Environment.NewLine + buf);
-                            //File.AppendAllText(fullPath, Environment.NewLine + string.Join(" ", buffer));
+                            File.AppendAllText(fullPath, Environment.NewLine + string.Join(" ", buffer));
+
+                            File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
+                            Array.Resize(ref buffer, 1024);
                         }
                         else if (getDataType == 1)
                         {
+                            String timeStamp = GetTimestamp(DateTime.Now);
+                            label5.Text = timeStamp;
+                            File.AppendAllText(fullPath, Environment.NewLine + "time -> " + timeStamp);
+
                             string buf = Encoding.ASCII.GetString(buffer);
                             label1.Text +=  buf;
 
                             // Add text to file
                             File.AppendAllText(fullPath, Environment.NewLine + buf);
-                            //File.AppendAllText(fullPath, Environment.NewLine + string.Join(" ", buffer));
+                            File.AppendAllText(fullPath, Environment.NewLine + string.Join(" ", buffer));
+
+                            File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
+                            Array.Resize(ref buffer, 1024);
                         }
                         else if (getDataType == 2)
                         {
                             if (buffer[1] == 0x04 || buffer[1] == 0x20 || buffer[1] == 0x00 || buffer[1] == 0xDD)
                             {
                                 label1.Text += "battery " + (batteryIndex).ToString() + ": " + " no battery\n";
-                                File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
+                                //File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
                             }
                             else
                             {
                                 if ((batteryState) == 0x30)
                                 {
                                     label1.Text += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
-                                    File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
+                                    //File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
                                 }
                                 else if ((batteryState) == 0x31)
                                 {
                                     label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mV\n";
-                                    File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
+                                    //File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
                                 }
                                 else if ((batteryState) == 0x32)
                                 {
                                     label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mA\n";
-                                    File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
+                                  //  File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
                                 }
                             }
                         }
-                        File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
-                        Array.Resize(ref buffer, 1024);
+                        
                     }
                 }
             }
@@ -215,6 +223,8 @@ namespace WindowsFormsApp3
             batteryIndexCks = 0x1b;
             batteryState = 0x30;
 
+            
+
             label1.Text = "";
             getDataType = 2;
             for (int i = 0; i < 12; i++)
@@ -233,22 +243,33 @@ namespace WindowsFormsApp3
 
                 label4.Text = "battery index: " + batteryIndex.ToString();
 
-                batteryIndex++;
+                batteryState++;
                 batteryIndexCks--;
 
-                if (batteryIndex == 4)
+                if (batteryState == 0x33)
                 {
-                    batteryIndex = 0;
-                    // batteryIndexCks = 0x1b;
-                    batteryIndexCks = (byte)(batteryIndexCks + 0x03);
+                    batteryState = 0x30;
+                    batteryIndex++;
 
-                    batteryState++;
-                    if (batteryState == 0x33) batteryState = 0x30;
+                    // batteryIndexCks = 0x1b;
+                    batteryIndexCks = (byte)(batteryIndexCks + 0x02);
+
+                    
+                    if (batteryIndex == 0x04) batteryState = 0x04;
 
                     // batteryIndexCks = (byte)(batteryIndexCks - (batteryState - 0x30) - 1); //batteryState is base 0x30
                 }
                 
             }
+            String timeStamp = GetTimestamp(DateTime.Now);
+            label5.Text = timeStamp;
+            File.AppendAllText(fullPath, Environment.NewLine + "time -> " + timeStamp);
+
+            
+            File.AppendAllText(fullPath, Environment.NewLine + "time -> " + timeStamp);
+            File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
+            File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
+
             sendData.Abort();
         }
        
