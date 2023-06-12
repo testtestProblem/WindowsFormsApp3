@@ -17,7 +17,7 @@ namespace WindowsFormsApp3
     {
         private SerialPort My_SerialPort;
         private bool Console_receiving = false;
-        int getDataType = 0;
+        int getDataType = -1;
         private Thread t, sendData;
 
         private static string folder = System.Environment.CurrentDirectory;
@@ -54,6 +54,17 @@ namespace WindowsFormsApp3
         {
             return value.ToString("yyyy/MM/dd_HH:mm:ss");
         }
+        public void GetTimestampLabel()
+        {
+            String timeStamp = GetTimestamp(DateTime.Now);
+            label5.Text = timeStamp;
+            File.AppendAllText(fullPath, Environment.NewLine + "time -> " + timeStamp);
+        }
+        public void recordData2txt(string data)
+        {
+            File.AppendAllText(fullPath, Environment.NewLine + data);
+            File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
+        }
 
         public void CloseComport()
         {
@@ -83,9 +94,9 @@ namespace WindowsFormsApp3
                     {
                         Int32 length = My_SerialPort.Read(buffer, 0, buffer.Length);
 
-                        String timeStamp = GetTimestamp(DateTime.Now);
-                        label5.Text = timeStamp;
-                        File.AppendAllText(fullPath, Environment.NewLine + "time -> " + timeStamp);
+ //                       String timeStamp = GetTimestamp(DateTime.Now);
+ //                       label5.Text = timeStamp;
+ //                       File.AppendAllText(fullPath, Environment.NewLine + "time -> " + timeStamp);
 
                         Array.Resize(ref buffer, length);
 
@@ -95,7 +106,7 @@ namespace WindowsFormsApp3
                             label1.Text += buf;
 
                             // Add text to file
-                            File.AppendAllText(fullPath, Environment.NewLine + buf);
+ //                           File.AppendAllText(fullPath, Environment.NewLine + buf);
                             //File.AppendAllText(fullPath, Environment.NewLine + string.Join(" ", buffer));
                         }
                         else if (getDataType == 1)
@@ -104,7 +115,7 @@ namespace WindowsFormsApp3
                             label1.Text +=  buf;
 
                             // Add text to file
-                            File.AppendAllText(fullPath, Environment.NewLine + buf);
+//                            File.AppendAllText(fullPath, Environment.NewLine + buf);
                             //File.AppendAllText(fullPath, Environment.NewLine + string.Join(" ", buffer));
                         }
                         else if (getDataType == 2)
@@ -119,21 +130,21 @@ namespace WindowsFormsApp3
                                 if ((batteryState) == 0x30)
                                 {
                                     label1.Text += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
-                                    File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
+//                                    File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
                                 }
                                 else if ((batteryState) == 0x31)
                                 {
                                     label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mV\n";
-                                    File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
+//                                    File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
                                 }
                                 else if ((batteryState) == 0x32)
                                 {
                                     label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mA\n";
-                                    File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
+ //                                   File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
                                 }
                             }
                         }
-                        File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
+ //                       File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
                         Array.Resize(ref buffer, 1024);
                     }
                 }
@@ -142,6 +153,137 @@ namespace WindowsFormsApp3
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        Byte batteryIndex = 0, batteryIndexCks = 0x1b, batteryState = 0x30;
+        void DoSend()
+        {
+            while (true)
+            {
+                switch (getDataType)
+                {
+                    case 100:     //BIOS BOM: 
+                        label1.Text = "";
+                        label1.Text += "BIOS BOM: ";
+
+                        try
+                        {
+                            Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x00, 0x5c };
+                            My_SerialPort.Write(buffer, 0, buffer.Length);
+                        }
+                        catch (Exception ex)
+                        {
+                            CloseComport();
+                            MessageBox.Show(ex.Message);
+                        }
+
+                        getDataType = 0;
+                        Thread.Sleep(1000);     //wait for receive data
+                        getDataType = -1;
+
+                        GetTimestampLabel();
+                        recordData2txt(label1.Text);
+
+                        break;
+
+                    case 101:     //BIOS product name:
+                        label1.Text = "";
+                        label1.Text += "BIOS product name: ";
+                        try
+                        {
+                            Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x01, 0x5b };
+                            My_SerialPort.Write(buffer, 0, buffer.Length);
+                        }
+                        catch (Exception ex)
+                        {
+                            CloseComport();
+                            MessageBox.Show(ex.Message);
+                        }
+
+                        getDataType = 1;
+                        Thread.Sleep(1100);     //wait for receive data
+                        getDataType = -1;
+
+                        GetTimestampLabel();
+                        recordData2txt(label1.Text);
+                        break;
+
+                    case 102:     //get battery state
+                        batteryIndex = 0;
+                        batteryIndexCks = 0x1b;
+                        batteryState = 0x30;
+
+                        label1.Text = "";
+                        getDataType = 2;
+                        for (int i = 0; i < 12; i++)
+                        {
+                            try
+                            {   //                          Length  Cmd     index       battery         checksum
+                                Byte[] buffer = new Byte[5] { 0x05, 0xB0, batteryState, batteryIndex, batteryIndexCks };
+                                My_SerialPort.Write(buffer, 0, buffer.Length);
+                            }
+                            catch (Exception ex)
+                            {
+                                CloseComport();
+                                MessageBox.Show(ex.Message);
+                            }
+                            Thread.Sleep(550);     //wait for receive data
+
+                            label4.Text = "battery index: " + batteryIndex.ToString();
+
+                            batteryIndex++;
+                            batteryIndexCks--;
+
+                            if (batteryIndex == 4)
+                            {
+                                batteryIndex = 0;
+                                // batteryIndexCks = 0x1b;
+                                batteryIndexCks = (byte)(batteryIndexCks + 0x03);
+
+                                batteryState++;
+                                if (batteryState == 0x33) batteryState = 0x30;
+
+                                // batteryIndexCks = (byte)(batteryIndexCks - (batteryState - 0x30) - 1); //batteryState is base 0x30
+                            }
+                        }
+
+                        getDataType = -1;
+
+                        GetTimestampLabel();
+                        recordData2txt(label1.Text);
+                        break;
+
+                    default:
+                        //do nothing
+                        break;
+                }
+
+                Thread.Sleep(30);
+            }
+        }
+
+        //clean UI
+        private void button3_Click(object sender, EventArgs e)
+        {
+            label1.Text = "";
+        }
+
+        //read BIOS product name
+        private void testCommand1_Click(object sender, EventArgs e)
+        {
+            getDataType = 101;
+        }
+
+        //read BIOS BOM
+        public void testCommand()
+        {
+            getDataType = 100;
+        }        
+        
+        //read battery state
+        private void button2_Click(object sender, EventArgs e)
+        {
+            getDataType = 102;
         }
 
         //open serial port
@@ -177,9 +319,27 @@ namespace WindowsFormsApp3
 
                 if (error == 0)
                 {
+                    try
+                    {
+                        // Check if file already exists. If yes, delete it.     
+                        if (File.Exists(fullPath))
+                        {
+                            File.Delete(fullPath);
+                        }
+                        // Create a new file     
+                        using (FileStream fs = File.Create(fullPath))
+                        {
+                        }
+                    }
+                    catch (Exception Ex)
+                    {
+                        Console.WriteLine(Ex.ToString());
+                    }
+
                     Console_receiving = true;
 
                     sendData = new Thread(DoSend);
+                    sendData.IsBackground = true;
                     sendData.Start();
 
                     //開啟執行續做接收動作
@@ -190,139 +350,9 @@ namespace WindowsFormsApp3
                     testCommand();
                 }
             }
-            try
-            {
-                // Check if file already exists. If yes, delete it.     
-                if (File.Exists(fullPath))
-                {
-                    File.Delete(fullPath);
-                }
-                // Create a new file     
-                using (FileStream fs = File.Create(fullPath))
-                {
-                }
-            }
-            catch (Exception Ex)
-            {
-                Console.WriteLine(Ex.ToString());
-            }
-        }
-
-        //read BIOS BOM
-        public void testCommand()
-        {
-            getDataType = 0;
-        }
-
-        Byte batteryIndex = 0, batteryIndexCks = 0x1b, batteryState = 0x30;
-        void DoSend()
-        {
-            switch (getDataType) 
-            {
-                case 0:
-                    label1.Text = "";
-                    label1.Text += "BIOS BOM: ";
-
-                    try
-                    {
-                        Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x00, 0x5c };
-                        My_SerialPort.Write(buffer, 0, buffer.Length);
-                    }
-                    catch (Exception ex)
-                    {
-                        CloseComport();
-                        MessageBox.Show(ex.Message);
-                    }
-
-                    Thread.Sleep(1000);
-                    getDataType = -1;
-                    break;
-
-                case 1:
-                    label1.Text = "";
-                    label1.Text += "BIOS product name: ";
-                    try
-                    {
-                        Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x01, 0x5b };
-                        My_SerialPort.Write(buffer, 0, buffer.Length);
-                    }
-                    catch (Exception ex)
-                    {
-                        CloseComport();
-                        MessageBox.Show(ex.Message);
-                    }
-
-                    Thread.Sleep(1100);
-                    getDataType = -1;
-                    break;
-
-                case 2:     //get battery state
-                    batteryIndex = 0;
-                    batteryIndexCks = 0x1b;
-                    batteryState = 0x30;
-
-                    label1.Text = "";
-                    getDataType = 2;
-                    for (int i = 0; i < 12; i++)
-                    {
-                        try
-                        {   //                          Length  Cmd     index       battery         checksum
-                            Byte[] buffer = new Byte[5] { 0x05, 0xB0, batteryState, batteryIndex, batteryIndexCks };
-                            My_SerialPort.Write(buffer, 0, buffer.Length);
-                        }
-                        catch (Exception ex)
-                        {
-                            CloseComport();
-                            MessageBox.Show(ex.Message);
-                        }
-                        Thread.Sleep(550);
-
-                        label4.Text = "battery index: " + batteryIndex.ToString();
-
-                        batteryIndex++;
-                        batteryIndexCks--;
-
-                        if (batteryIndex == 4)
-                        {
-                            batteryIndex = 0;
-                            // batteryIndexCks = 0x1b;
-                            batteryIndexCks = (byte)(batteryIndexCks + 0x03);
-
-                            batteryState++;
-                            if (batteryState == 0x33) batteryState = 0x30;
-
-                            // batteryIndexCks = (byte)(batteryIndexCks - (batteryState - 0x30) - 1); //batteryState is base 0x30
-                        }
-                    }
-
-                    getDataType = -1;
-                    break;
-
-                default:
-                    //do nothing
-                    break;
-
-            }
-            
-        }
-       
-        //read battery state
-        private void button2_Click(object sender, EventArgs e)
-        {
-            getDataType = 2;
-        }
-
-        //clean UI
-        private void button3_Click(object sender, EventArgs e)
-        {
-            label1.Text = "";
         }
 
 
-        //read BIOS product name
-        private void testCommand1_Click(object sender, EventArgs e)
-        {
-            getDataType = 1;
-        }
+
     }
 }
