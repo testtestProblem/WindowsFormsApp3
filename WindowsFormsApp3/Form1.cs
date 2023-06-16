@@ -151,6 +151,7 @@ namespace WindowsFormsApp3
                         }
                         Array.Resize(ref buffer, 1024);
                     }
+                    Thread.Sleep(100);  //for reduce cpu utilization
                 }
             }
             catch (Exception ex)
@@ -216,6 +217,9 @@ namespace WindowsFormsApp3
                         batteryIndexCks = 0x1b;
                         batteryState = 0x30;
 
+                        this.dataGridView1.DataSource = null;
+                        this.dataGridView1.Rows.Clear();
+
                         label1.Text = "";
                         getDataType = 2;
                         for (int i = 0; i < 12; i++)
@@ -232,7 +236,7 @@ namespace WindowsFormsApp3
                             }
                             Thread.Sleep(550);     //wait for receive data
 
-                            label4.Text = "battery index: " + batteryIndex.ToString();
+                            //label4.Text = "battery index: " + batteryIndex.ToString();
 
                             batteryState++;
                             batteryIndexCks--;
@@ -259,7 +263,7 @@ namespace WindowsFormsApp3
                         break;
                 }
 
-                Thread.Sleep(30);
+                Thread.Sleep(100);  //for reduce cpu utilization
             }
         }
 
