@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.IO.Ports;
@@ -34,7 +35,7 @@ namespace WindowsFormsApp3
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            //this.dataGridView1.DefaultCellStyle.Font = new Font("Tahoma", 30);
         }
 
         private void Form1_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -151,6 +152,8 @@ namespace WindowsFormsApp3
                         }
                         Array.Resize(ref buffer, 1024);
                     }
+                    Debug.WriteLineIf(true, "DoReceive()\n");
+                    Thread.Sleep(100);
                 }
             }
             catch (Exception ex)
@@ -218,6 +221,11 @@ namespace WindowsFormsApp3
 
                         label1.Text = "";
                         getDataType = 2;
+
+                        this.dataGridView1.DataSource = null;
+                        this.dataGridView1.Rows.Clear();
+                        //this.dataGridView1.DataSource = this.get;
+
                         for (int i = 0; i < 12; i++)
                         {
                             try
@@ -258,8 +266,9 @@ namespace WindowsFormsApp3
                         //do nothing
                         break;
                 }
+                Thread.Sleep(100);
 
-                Thread.Sleep(30);
+                Debug.WriteLineIf(true, "DoSend()\n");
             }
         }
 
@@ -351,6 +360,8 @@ namespace WindowsFormsApp3
                     testCommand();
                 }
             }
+
+            Debug.WriteLineIf(true, "button1_Click()\n");
         }
     }
 }
