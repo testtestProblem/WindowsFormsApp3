@@ -20,6 +20,8 @@ namespace WindowsFormsApp3
         int getDataType = -1;
         private Thread t, sendData;
 
+        public delegate void UpdateViewGrid(int a,int b,int c,int d);
+
         private static string folder = System.Environment.CurrentDirectory;
         private static string fileName = "\\batteryInformation.txt";
         // Fullpath. 
@@ -81,70 +83,63 @@ namespace WindowsFormsApp3
             t.Abort();
         }
 
-        
+
+        public void updateViewGrid(int a,int b,int c,int d) {
+            dataGridView1.Rows.Add(a, b, c, d);
+        }
+
+
+
         private void DoReceive()
         {
             Byte[] buffer = new Byte[32];
             try
             {
                 while (Console_receiving)
-                //while (My_SerialPort.DataReceived)
                 {
                     if (My_SerialPort.BytesToRead > 0)
                     {
                         Int32 length = My_SerialPort.Read(buffer, 0, buffer.Length);
-
- //                       String timeStamp = GetTimestamp(DateTime.Now);
- //                       label5.Text = timeStamp;
- //                       File.AppendAllText(fullPath, Environment.NewLine + "time -> " + timeStamp);
-
                         Array.Resize(ref buffer, length);
 
                         if (getDataType == 0)
                         {
                             string buf = Encoding.ASCII.GetString(buffer);
                             label1.Text += buf;
-
-                            // Add text to file
- //                           File.AppendAllText(fullPath, Environment.NewLine + buf);
-                            //File.AppendAllText(fullPath, Environment.NewLine + string.Join(" ", buffer));
+                            dataGridView1.Rows.Add(10, 20, 30, 40);
                         }
                         else if (getDataType == 1)
                         {
                             string buf = Encoding.ASCII.GetString(buffer);
                             label1.Text +=  buf;
-
-                            // Add text to file
-//                            File.AppendAllText(fullPath, Environment.NewLine + buf);
-                            //File.AppendAllText(fullPath, Environment.NewLine + string.Join(" ", buffer));
+                            dataGridView1.Rows.Add(5, 6, 7, 8);
                         }
                         else if (getDataType == 2)
                         {
                             if (buffer[1] == 0x04 || buffer[1] == 0x20 || buffer[1] == 0x00 || buffer[1] == 0xDD)
                             {
                                 label1.Text += "battery " + (batteryIndex).ToString() + ": " + "no battery\n";
-                                File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
                             }
                             else
                             {
                                 if ((batteryState) == 0x30)
                                 {
                                     label1.Text += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
-//                                    File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
                                 }
                                 else if ((batteryState) == 0x31)
                                 {
                                     label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mV\n";
-//                                    File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
                                 }
                                 else if ((batteryState) == 0x32)
                                 {
                                     label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mA\n";
- //                                   File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
                                 }
                             }
+                            UpdateViewGrid testUpdateViewGrid = new UpdateViewGrid(updateViewGrid);
+                            this.BeginInvoke(testUpdateViewGrid, new Object[] { 100, 200, 300, 400 });
+                            //dataGridView1.Rows.c
                         }
- //                       File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
+                       // My_SerialPort.
                         Array.Resize(ref buffer, 1024);
                     }
                 }
@@ -178,11 +173,14 @@ namespace WindowsFormsApp3
                         }
 
                         getDataType = 0;
-                        Thread.Sleep(1000);     //wait for receive data
+                        Thread.Sleep(650);     //wait for receive data
                         getDataType = -1;
 
                         GetTimestampLabel();
                         recordData2txt(label1.Text);
+
+                        sendData.Abort();
+                        t.Abort();
 
                         break;
 
@@ -201,11 +199,15 @@ namespace WindowsFormsApp3
                         }
 
                         getDataType = 1;
-                        Thread.Sleep(1100);     //wait for receive data
+                        Thread.Sleep(650);     //wait for receive data
                         getDataType = -1;
 
                         GetTimestampLabel();
                         recordData2txt(label1.Text);
+
+                        sendData.Abort();
+                        t.Abort();
+
                         break;
 
                     case 102:     //get battery state
@@ -231,19 +233,18 @@ namespace WindowsFormsApp3
 
                             label4.Text = "battery index: " + batteryIndex.ToString();
 
-                            batteryIndex++;
+                            batteryState++;
                             batteryIndexCks--;
 
-                            if (batteryIndex == 4)
+                            if (batteryState == 0x33)
                             {
-                                batteryIndex = 0;
+                                batteryState = 0x30;
+                                batteryIndex++;
+
                                 // batteryIndexCks = 0x1b;
-                                batteryIndexCks = (byte)(batteryIndexCks + 0x03);
+                                batteryIndexCks = (byte)(batteryIndexCks + 0x02);
 
-                                batteryState++;
-                                if (batteryState == 0x33) batteryState = 0x30;
-
-                                // batteryIndexCks = (byte)(batteryIndexCks - (batteryState - 0x30) - 1); //batteryState is base 0x30
+                                if (batteryIndex == 0x04) batteryState = 0x04;
                             }
                         }
 
@@ -251,13 +252,16 @@ namespace WindowsFormsApp3
 
                         GetTimestampLabel();
                         recordData2txt(label1.Text);
+
+                        sendData.Abort();
+                        t.Abort();
+
                         break;
 
                     default:
                         //do nothing
                         break;
                 }
-
                 Thread.Sleep(30);
             }
         }
@@ -268,22 +272,63 @@ namespace WindowsFormsApp3
             label1.Text = "";
         }
 
-        //read BIOS product name
-        private void testCommand1_Click(object sender, EventArgs e)
+
+        int test1 = 0;
+        private void button4_Click(object sender, EventArgs e)
         {
-            getDataType = 101;
+            test1++;
+            dataGridView1.Rows.Add(test1, test1+1, test1+2, test1+3);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            dataGridView1.Rows.Add(-1, "abcd", test1, "asda44");
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
 
         //read BIOS BOM
         public void testCommand()
         {
-            getDataType = 100;
+            getDataType = 100; 
+            
+            sendData = new Thread(DoSend);
+            sendData.IsBackground = true;
+            sendData.Start();
+
+            t = new Thread(DoReceive);
+            t.IsBackground = true;
+            t.Start();
         }        
         
         //read battery state
         private void button2_Click(object sender, EventArgs e)
         {
             getDataType = 102;
+
+            sendData = new Thread(DoSend);
+            sendData.IsBackground = true;
+            sendData.Start();
+
+            t = new Thread(DoReceive);
+            t.IsBackground = true;
+            t.Start();
+        }
+        //read BIOS product name
+        private void testCommand1_Click(object sender, EventArgs e)
+        {
+            getDataType = 101;
+
+            sendData = new Thread(DoSend);
+            sendData.IsBackground = true;
+            sendData.Start();
+
+            t = new Thread(DoReceive);
+            t.IsBackground = true;
+            t.Start();
         }
 
         //open serial port
@@ -338,14 +383,13 @@ namespace WindowsFormsApp3
 
                     Console_receiving = true;
 
-                    sendData = new Thread(DoSend);
-                    sendData.IsBackground = true;
-                    sendData.Start();
+                    //sendData = new Thread(DoSend);
+                    //sendData.IsBackground = true;
+                    //sendData.Start();
 
-                    //開啟執行續做接收動作
-                    t = new Thread(DoReceive);
-                    t.IsBackground = true;
-                    t.Start();
+                    //t = new Thread(DoReceive);
+                    //t.IsBackground = true;
+                    //t.Start();
 
                     testCommand();
                 }
