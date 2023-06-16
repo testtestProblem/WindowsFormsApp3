@@ -117,8 +117,8 @@ namespace WindowsFormsApp3
                         {
                             if (buffer[1] == 0x04 || buffer[1] == 0x20 || buffer[1] == 0x00 || buffer[1] == 0xDD)
                             {
-                                label1.Text += "battery " + (batteryIndex).ToString() + ": " + "no battery\n";
-                                File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
+                             //   label1.Text += "battery " + (batteryIndex).ToString() + ": " + "no battery\n";
+                             //   File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
 
                                 batterStateC[batterStatecounter] = -1;
                             }
@@ -126,17 +126,17 @@ namespace WindowsFormsApp3
                             {
                                 if ((batteryState) == 0x30)
                                 {
-                                    label1.Text += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
+                               //     label1.Text += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
                                     batterStateC[batterStatecounter] = buffer[2];
                                 }
                                 else if ((batteryState) == 0x31)
                                 {
-                                    label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mV\n";
+                              //      label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mV\n";
                                     batterStateC[batterStatecounter] = ((int)buffer[2] + (((int)buffer[3]) << 8));
                                 }
                                 else if ((batteryState) == 0x32)
                                 {
-                                    label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mA\n";
+                                //    label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mA\n";
                                     batterStateC[batterStatecounter] = ((int)buffer[2] + (((int)buffer[3]) << 8));
                                 }
                             }
