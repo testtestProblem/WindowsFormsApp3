@@ -176,7 +176,7 @@ namespace WindowsFormsApp3
             this.dataGridView1.Location = new System.Drawing.Point(282, 11);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(257, 216);
+            this.dataGridView1.Size = new System.Drawing.Size(280, 216);
             this.dataGridView1.TabIndex = 11;
             // 
             // indexGrid
@@ -193,29 +193,29 @@ namespace WindowsFormsApp3
             this.powerGrid.HeaderText = "power";
             this.powerGrid.Name = "powerGrid";
             this.powerGrid.ReadOnly = true;
-            this.powerGrid.Width = 60;
+            this.powerGrid.Width = 50;
             // 
             // voltageGrid
             // 
             this.voltageGrid.Frozen = true;
-            this.voltageGrid.HeaderText = "voltage";
+            this.voltageGrid.HeaderText = "voltage(mV)";
             this.voltageGrid.Name = "voltageGrid";
             this.voltageGrid.ReadOnly = true;
-            this.voltageGrid.Width = 60;
+            this.voltageGrid.Width = 70;
             // 
             // ampereGrid
             // 
             this.ampereGrid.Frozen = true;
-            this.ampereGrid.HeaderText = "ampere";
+            this.ampereGrid.HeaderText = "ampere(mA)";
             this.ampereGrid.Name = "ampereGrid";
             this.ampereGrid.ReadOnly = true;
-            this.ampereGrid.Width = 60;
+            this.ampereGrid.Width = 70;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(539, 696);
+            this.ClientSize = new System.Drawing.Size(564, 696);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.button3);

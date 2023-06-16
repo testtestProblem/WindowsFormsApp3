@@ -20,6 +20,8 @@ namespace WindowsFormsApp3
         int getDataType = -1;
         private Thread t, sendData;
 
+        public delegate void UpdateViewGrid(int a, int b, int c, int d);
+
         private static string folder = System.Environment.CurrentDirectory;
         private static string fileName = "\\batteryInformation.txt";
         // Fullpath. 
@@ -80,8 +82,13 @@ namespace WindowsFormsApp3
             Console_receiving = false;
             t.Abort();
         }
+        public void updateViewGrid(int a, int b, int c, int d)
+        {
+            dataGridView1.Rows.Add(a, b, c, d);
+        }
 
-        
+        int batterStatecounter = 0;
+        int[] batterStateC=new int[3];
         private void DoReceive()
         {
             Byte[] buffer = new Byte[32];
@@ -104,7 +111,7 @@ namespace WindowsFormsApp3
                         else if (getDataType == 1)
                         {
                             string buf = Encoding.ASCII.GetString(buffer);
-                            label1.Text +=  buf;
+                            label1.Text += buf;
                         }
                         else if (getDataType == 2)
                         {
@@ -112,21 +119,34 @@ namespace WindowsFormsApp3
                             {
                                 label1.Text += "battery " + (batteryIndex).ToString() + ": " + "no battery\n";
                                 File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
+
+                                batterStateC[batterStatecounter] = -1;
                             }
                             else
                             {
                                 if ((batteryState) == 0x30)
                                 {
                                     label1.Text += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
+                                    batterStateC[batterStatecounter] = buffer[2];
                                 }
                                 else if ((batteryState) == 0x31)
                                 {
                                     label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mV\n";
+                                    batterStateC[batterStatecounter] = ((int)buffer[2] + (((int)buffer[3]) << 8));
                                 }
                                 else if ((batteryState) == 0x32)
                                 {
                                     label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mA\n";
+                                    batterStateC[batterStatecounter] = ((int)buffer[2] + (((int)buffer[3]) << 8));
                                 }
+                            }
+
+                            batterStatecounter++;
+                            if (batterStatecounter == 3)
+                            {
+                                batterStatecounter = 0;
+                                UpdateViewGrid testUpdateViewGrid = new UpdateViewGrid(updateViewGrid);
+                                this.BeginInvoke(testUpdateViewGrid, new Object[] { (int)batteryIndex, batterStateC[0], batterStateC[1], batterStateC[2] });
                             }
                         }
                         Array.Resize(ref buffer, 1024);
@@ -149,7 +169,6 @@ namespace WindowsFormsApp3
                     case 100:     //BIOS BOM: 
                         label1.Text = "";
                         label1.Text += "BIOS BOM: ";
-
                         try
                         {
                             Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x00, 0x5c };
@@ -215,17 +234,18 @@ namespace WindowsFormsApp3
 
                             label4.Text = "battery index: " + batteryIndex.ToString();
 
-                            batteryIndex++;
+                            batteryState++;
                             batteryIndexCks--;
 
-                            if (batteryIndex == 4)
+                            if (batteryState == 0x33)
                             {
-                                batteryIndex = 0;
-                                // batteryIndexCks = 0x1b;
-                                batteryIndexCks = (byte)(batteryIndexCks + 0x03);
+                                batteryState = 0x30;
+                                batteryIndex++;
 
-                                batteryState++;
-                                if (batteryState == 0x33) batteryState = 0x30;
+                                // batteryIndexCks = 0x1b;
+                                batteryIndexCks = (byte)(batteryIndexCks + 0x02);
+
+                                if (batteryIndex == 0x04) batteryState = 0x04;
                             }
                         }
                         getDataType = -1;
