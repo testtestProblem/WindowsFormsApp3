@@ -94,29 +94,17 @@ namespace WindowsFormsApp3
                     {
                         Int32 length = My_SerialPort.Read(buffer, 0, buffer.Length);
 
- //                       String timeStamp = GetTimestamp(DateTime.Now);
- //                       label5.Text = timeStamp;
- //                       File.AppendAllText(fullPath, Environment.NewLine + "time -> " + timeStamp);
-
                         Array.Resize(ref buffer, length);
 
                         if (getDataType == 0)
                         {
                             string buf = Encoding.ASCII.GetString(buffer);
                             label1.Text += buf;
-
-                            // Add text to file
- //                           File.AppendAllText(fullPath, Environment.NewLine + buf);
-                            //File.AppendAllText(fullPath, Environment.NewLine + string.Join(" ", buffer));
                         }
                         else if (getDataType == 1)
                         {
                             string buf = Encoding.ASCII.GetString(buffer);
                             label1.Text +=  buf;
-
-                            // Add text to file
-//                            File.AppendAllText(fullPath, Environment.NewLine + buf);
-                            //File.AppendAllText(fullPath, Environment.NewLine + string.Join(" ", buffer));
                         }
                         else if (getDataType == 2)
                         {
@@ -130,21 +118,17 @@ namespace WindowsFormsApp3
                                 if ((batteryState) == 0x30)
                                 {
                                     label1.Text += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
-//                                    File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
                                 }
                                 else if ((batteryState) == 0x31)
                                 {
                                     label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mV\n";
-//                                    File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
                                 }
                                 else if ((batteryState) == 0x32)
                                 {
                                     label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mA\n";
- //                                   File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
                                 }
                             }
                         }
- //                       File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
                         Array.Resize(ref buffer, 1024);
                     }
                 }
@@ -178,7 +162,7 @@ namespace WindowsFormsApp3
                         }
 
                         getDataType = 0;
-                        Thread.Sleep(1000);     //wait for receive data
+                        Thread.Sleep(900);     //wait for receive data
                         getDataType = -1;
 
                         GetTimestampLabel();
@@ -201,7 +185,7 @@ namespace WindowsFormsApp3
                         }
 
                         getDataType = 1;
-                        Thread.Sleep(1100);     //wait for receive data
+                        Thread.Sleep(500);     //wait for receive data
                         getDataType = -1;
 
                         GetTimestampLabel();
@@ -242,11 +226,8 @@ namespace WindowsFormsApp3
 
                                 batteryState++;
                                 if (batteryState == 0x33) batteryState = 0x30;
-
-                                // batteryIndexCks = (byte)(batteryIndexCks - (batteryState - 0x30) - 1); //batteryState is base 0x30
                             }
                         }
-
                         getDataType = -1;
 
                         GetTimestampLabel();
@@ -351,8 +332,5 @@ namespace WindowsFormsApp3
                 }
             }
         }
-
-
-
     }
 }
