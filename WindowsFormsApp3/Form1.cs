@@ -20,7 +20,7 @@ namespace WindowsFormsApp3
         int getDataType = -1;
         private Thread t, sendData;
 
-        public delegate void UpdateViewGrid(int a, int b, int c, int d);
+        public delegate void UpdateViewGrid(object a, object b, object c, object d);
 
         private static string folder = System.Environment.CurrentDirectory;
         private static string fileName = "\\batteryInformation.txt";
@@ -82,7 +82,7 @@ namespace WindowsFormsApp3
             Console_receiving = false;
             t.Abort();
         }
-        public void updateViewGrid(int a, int b, int c, int d)
+        public void updateViewGrid(object a, object b, object c, object d)
         {
             dataGridView1.Rows.Add(a, b, c, d);
         }
@@ -90,6 +90,7 @@ namespace WindowsFormsApp3
         int batterStatecounter = 0;
         int[] batterStateC = new int[3];
         string battryStateTemp = "";
+        int batteryError = 0;
         private void DoReceive()
         {
             Byte[] buffer = new Byte[32];
@@ -117,10 +118,9 @@ namespace WindowsFormsApp3
                         {
                             if (buffer[1] == 0x04 || buffer[1] == 0x20 || buffer[1] == 0x00 || buffer[1] == 0xDD)
                             {
-                                //   label1.Text += "battery " + (batteryIndex).ToString() + ": " + "no battery\n";
-                                //   File.AppendAllText(fullPath, Environment.NewLine + label1.Text);
                                 battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + "no battery\n";
                                 batterStateC[batterStatecounter] = -1;
+                                batteryError = 1;
                             }
                             else
                             {
@@ -132,15 +132,25 @@ namespace WindowsFormsApp3
                                 }
                                 else if ((batteryState) == 0x31)
                                 {
-                                    //      label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mV\n";
-                                    battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mV\n";
+                                    int temp_v;
+                                    temp_v = ((int)buffer[2] + (((int)buffer[3]) << 8));
+
+                                    //label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mV\n";
+                                    battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + temp_v.ToString() + "mV\n";
                                     batterStateC[batterStatecounter] = ((int)buffer[2] + (((int)buffer[3]) << 8));
+
+                                    if (temp_v > 10000) batteryError = 1;
                                 }
                                 else if ((batteryState) == 0x32)
                                 {
+                                    int temp_a;
+                                    temp_a = ((int)buffer[2] + (((int)buffer[3]) << 8));
+
                                     //    label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mA\n";
-                                    battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mA\n";
+                                    battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + temp_a.ToString() + "mA\n";
                                     batterStateC[batterStatecounter] = ((int)buffer[2] + (((int)buffer[3]) << 8));
+
+                                    if (temp_a > 10000) batteryError = 1;
                                 }
                             }
 
@@ -149,7 +159,16 @@ namespace WindowsFormsApp3
                             {
                                 batterStatecounter = 0;
                                 UpdateViewGrid testUpdateViewGrid = new UpdateViewGrid(updateViewGrid);
-                                this.BeginInvoke(testUpdateViewGrid, new Object[] { (int)batteryIndex, batterStateC[0], batterStateC[1], batterStateC[2] });
+
+                                if (batteryError == 0)
+                                {
+                                    this.BeginInvoke(testUpdateViewGrid, new Object[] { (int)batteryIndex, batterStateC[0], batterStateC[1], batterStateC[2] });
+                                }
+                                else if (batteryError == 1) 
+                                {
+                                    this.BeginInvoke(testUpdateViewGrid, new Object[] { (int)batteryIndex, "NA", "NA", "NA" });
+                                    batteryError = 0;
+                                }
                             }
                         }
                         Array.Resize(ref buffer, 1024);
@@ -209,25 +228,25 @@ namespace WindowsFormsApp3
                         break;
 
                     case 101:     //BIOS product name:
-                        label_biosName.Text = "";
-                        label_biosName.Text += "BIOS product name: ";
-                        try
-                        {
-                            Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x01, 0x5b };
-                            My_SerialPort.Write(buffer, 0, buffer.Length);
-                        }
-                        catch (Exception ex)
-                        {
-                            CloseComport();
-                            MessageBox.Show(ex.Message);
-                        }
+                        //label_biosName.Text = "";
+                        //label_biosName.Text += "BIOS product name: ";
+                        //try
+                        //{
+                        //    Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x01, 0x5b };
+                        //    My_SerialPort.Write(buffer, 0, buffer.Length);
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    CloseComport();
+                        //    MessageBox.Show(ex.Message);
+                        //}
 
-                        getDataType = 1;
-                        Thread.Sleep(500);     //wait for receive data
-                        getDataType = -1;
+                        //getDataType = 1;
+                        //Thread.Sleep(500);     //wait for receive data
+                        //getDataType = -1;
 
-                        GetTimestampLabel();
-                        recordData2txt(label_biosName.Text);
+                        //GetTimestampLabel();
+                        //recordData2txt(label_biosName.Text);
                         break;
 
                     case 102:     //get battery state
