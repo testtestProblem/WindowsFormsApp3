@@ -60,7 +60,7 @@ namespace WindowsFormsApp3
         {
             String timeStamp = GetTimestamp(DateTime.Now);
             label5.Text = timeStamp;
-            File.AppendAllText(fullPath, Environment.NewLine + "time -> " + timeStamp);
+            File.AppendAllText(fullPath, Environment.NewLine + "time: " + timeStamp);
         }
         public void recordData2txt(string data)
         {
@@ -101,18 +101,17 @@ namespace WindowsFormsApp3
                     if (My_SerialPort.BytesToRead > 0)
                     {
                         Int32 length = My_SerialPort.Read(buffer, 0, buffer.Length);
-
                         Array.Resize(ref buffer, length);
 
-                        if (getDataType == 0)
+                        if (getDataType == 0)       //for parse BIOS BOM
                         {
                             string buf = Encoding.ASCII.GetString(buffer);
-                            label1.Text += buf;
+                            lable_biosBom.Text = buf;
                         }
-                        else if (getDataType == 1)
+                        else if (getDataType == 1)  //for parse BIOS name
                         {
                             string buf = Encoding.ASCII.GetString(buffer);
-                            label1.Text += buf;
+                            label_biosName.Text = buf;
                         }
                         else if (getDataType == 2)
                         {
@@ -171,12 +170,10 @@ namespace WindowsFormsApp3
             {
                 switch (getDataType)
                 {
-                    case 100:     //BIOS BOM: 
-                        label1.Text = "";
-                        label1.Text += "BIOS BOM: ";
+                    case 100:     //get BIOS BOM and BIOS name
                         try
                         {
-                            Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x00, 0x5c };
+                            Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x00, 0x5c };     //BIOS BOM
                             My_SerialPort.Write(buffer, 0, buffer.Length);
                         }
                         catch (Exception ex)
@@ -185,18 +182,35 @@ namespace WindowsFormsApp3
                             MessageBox.Show(ex.Message);
                         }
 
-                        getDataType = 0;
-                        Thread.Sleep(900);     //wait for receive data
-                        getDataType = -1;
+                        getDataType = 0;        //parse method
+                        Thread.Sleep(900);      //wait for receive data
+
+                        try
+                        {
+                            Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x01, 0x5b };     //BIOS name
+                            My_SerialPort.Write(buffer, 0, buffer.Length);
+                        }
+                        catch (Exception ex)
+                        {
+                            CloseComport();
+                            MessageBox.Show(ex.Message);
+                        }
+
+                        getDataType = 1;        //parse method
+                        Thread.Sleep(500);      //wait for receive data
+
+                        getDataType = -1;       //do nothing
 
                         GetTimestampLabel();
-                        recordData2txt(label1.Text);
+                        File.AppendAllText(fullPath, Environment.NewLine + label6 + " " + lable_biosBom.Text);
+                        File.AppendAllText(fullPath, Environment.NewLine + label8 + " " + label_biosName.Text);
+                        File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
 
                         break;
 
                     case 101:     //BIOS product name:
-                        label1.Text = "";
-                        label1.Text += "BIOS product name: ";
+                        label_biosName.Text = "";
+                        label_biosName.Text += "BIOS product name: ";
                         try
                         {
                             Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x01, 0x5b };
@@ -213,7 +227,7 @@ namespace WindowsFormsApp3
                         getDataType = -1;
 
                         GetTimestampLabel();
-                        recordData2txt(label1.Text);
+                        recordData2txt(label_biosName.Text);
                         break;
 
                     case 102:     //get battery state
@@ -276,7 +290,7 @@ namespace WindowsFormsApp3
         //clean UI
         private void button3_Click(object sender, EventArgs e)
         {
-            label1.Text = "";
+            label_biosName.Text = "";
         }
 
         //read BIOS product name
