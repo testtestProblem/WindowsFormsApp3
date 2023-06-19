@@ -107,12 +107,12 @@ namespace WindowsFormsApp3
                         if (getDataType == 0)       //for parse BIOS BOM
                         {
                             string buf = Encoding.ASCII.GetString(buffer);
-                            lable_biosBom.Text = buf;
+                            lable_biosBom.Text += buf;
                         }
                         else if (getDataType == 1)  //for parse BIOS name
                         {
                             string buf = Encoding.ASCII.GetString(buffer);
-                            label_biosName.Text = buf;
+                            label_biosName.Text += buf;
                         }
                         else if (getDataType == 2)
                         {
@@ -190,6 +190,10 @@ namespace WindowsFormsApp3
                 switch (getDataType)
                 {
                     case 100:     //get BIOS BOM and BIOS name
+                        
+                        lable_biosBom.Text = "";
+                        getDataType = 0;        //parse method
+                        
                         try
                         {
                             Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x00, 0x5c };     //BIOS BOM
@@ -201,8 +205,10 @@ namespace WindowsFormsApp3
                             MessageBox.Show(ex.Message);
                         }
 
-                        getDataType = 0;        //parse method
-                        Thread.Sleep(800);      //wait for receive data
+                        Thread.Sleep(750);      //wait for receive data
+
+                        label_biosName.Text = "";
+                        getDataType = 1;        //parse method
 
                         try
                         {
@@ -215,8 +221,7 @@ namespace WindowsFormsApp3
                             MessageBox.Show(ex.Message);
                         }
 
-                        getDataType = 1;        //parse method
-                        Thread.Sleep(400);      //wait for receive data
+                        Thread.Sleep(500);      //wait for receive data
 
                         getDataType = -1;       //do nothing
 
@@ -293,8 +298,8 @@ namespace WindowsFormsApp3
 
                         GetTimestampLabel();
                         recordData2txt(battryStateTemp);
-
                         battryStateTemp = "";
+
                         break;
 
                     default:
@@ -313,7 +318,7 @@ namespace WindowsFormsApp3
                 }
                 else if (comboBox_reflashRate.Text == "Slow")
                 {
-                    Thread.Sleep(4000);  
+                    Thread.Sleep(4300);  
                     getDataType = 102;
                 }
                 else if (comboBox_reflashRate.Text == "Stop") 
