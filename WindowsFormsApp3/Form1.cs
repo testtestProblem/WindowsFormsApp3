@@ -59,7 +59,7 @@ namespace WindowsFormsApp3
         public void GetTimestampLabel()
         {
             String timeStamp = GetTimestamp(DateTime.Now);
-            label5.Text = timeStamp;
+            label_time.Text = timeStamp;
             File.AppendAllText(fullPath, Environment.NewLine + "time: " + timeStamp);
         }
         public void recordData2txt(string data)
@@ -202,7 +202,7 @@ namespace WindowsFormsApp3
                         }
 
                         getDataType = 0;        //parse method
-                        Thread.Sleep(900);      //wait for receive data
+                        Thread.Sleep(800);      //wait for receive data
 
                         try
                         {
@@ -216,7 +216,7 @@ namespace WindowsFormsApp3
                         }
 
                         getDataType = 1;        //parse method
-                        Thread.Sleep(500);      //wait for receive data
+                        Thread.Sleep(400);      //wait for receive data
 
                         getDataType = -1;       //do nothing
 
@@ -271,7 +271,7 @@ namespace WindowsFormsApp3
                                 CloseComport();
                                 MessageBox.Show(ex.Message);
                             }
-                            Thread.Sleep(550);     //wait for receive data
+                            Thread.Sleep(300);     //wait for receive data
 
                             //label4.Text = "battery index: " + batteryIndex.ToString();
 
@@ -293,7 +293,7 @@ namespace WindowsFormsApp3
 
                         GetTimestampLabel();
                         recordData2txt(battryStateTemp);
-                        
+
                         battryStateTemp = "";
                         break;
 
@@ -302,7 +302,26 @@ namespace WindowsFormsApp3
                         break;
                 }
 
-                Thread.Sleep(100);  //for reduce cpu utilization
+                if (comboBox_reflashRate.Text == "Normal")
+                {
+                    Thread.Sleep(1500);  
+                    getDataType = 102;
+                }
+                else if (comboBox_reflashRate.Text == "Rapid")
+                {
+                    getDataType = 102;
+                }
+                else if (comboBox_reflashRate.Text == "Slow")
+                {
+                    Thread.Sleep(4000);  
+                    getDataType = 102;
+                }
+                else if (comboBox_reflashRate.Text == "Stop") 
+                {
+                    getDataType = -1;
+                }
+                Thread.Sleep(100);      //for reduce cpu utilization
+
             }
         }
 
@@ -316,6 +335,21 @@ namespace WindowsFormsApp3
         private void testCommand1_Click(object sender, EventArgs e)
         {
             getDataType = 101;
+        }
+
+        private void comboBox_reflashRate_SelectedIndexChanged(object sender, EventArgs e)
+        {/*
+            if (comboBox_reflashRate.Text == "Stop")
+            {
+                sendData.Abort();
+            }
+            else
+            {
+                sendData = new Thread(DoSend);
+                sendData.IsBackground = true;
+                sendData.Start();
+
+            }*/
         }
 
         //read BIOS BOM
@@ -341,7 +375,7 @@ namespace WindowsFormsApp3
             }
 
             //設定 Serial Port 參數
-            My_SerialPort.PortName = comboBox1.Text;
+            My_SerialPort.PortName = comboBox_comPortSelecter.Text;
             My_SerialPort.BaudRate = 9600;
             My_SerialPort.DataBits = 8;
             My_SerialPort.StopBits = StopBits.One;
