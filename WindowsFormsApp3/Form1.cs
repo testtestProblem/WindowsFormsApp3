@@ -184,7 +184,7 @@ namespace WindowsFormsApp3
 
         Byte batteryIndex = 0, batteryIndexCks = 0x1b, batteryState = 0x30;
         void DoSend()
-        {
+        {///dsfsdsf
             while (true)
             {
                 switch (getDataType)
