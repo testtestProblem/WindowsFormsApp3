@@ -29,18 +29,13 @@ namespace WindowsFormsApp3
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.button1 = new System.Windows.Forms.Button();
             this.label_biosName = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
             this.comboBox_comPortSelecter = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.testCommand1 = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
-            this.button3 = new System.Windows.Forms.Button();
             this.label_time = new System.Windows.Forms.Label();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.indexGrid = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -75,29 +70,6 @@ namespace WindowsFormsApp3
             this.label_biosName.Size = new System.Drawing.Size(81, 23);
             this.label_biosName.TabIndex = 1;
             this.label_biosName.Text = "unknow";
-            // 
-            // button2
-            // 
-            this.button2.Font = new System.Drawing.Font("PMingLiU", 16F);
-            this.button2.Location = new System.Drawing.Point(384, 324);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(78, 61);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "check battery";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Visible = false;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("PMingLiU", 10F);
-            this.label2.Location = new System.Drawing.Point(150, 371);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(73, 14);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "receive data";
-            this.label2.Visible = false;
             // 
             // comboBox_comPortSelecter
             // 
@@ -135,40 +107,6 @@ namespace WindowsFormsApp3
             this.label3.TabIndex = 5;
             this.label3.Text = "com port";
             // 
-            // testCommand1
-            // 
-            this.testCommand1.Font = new System.Drawing.Font("PMingLiU", 12F);
-            this.testCommand1.Location = new System.Drawing.Point(220, 397);
-            this.testCommand1.Name = "testCommand1";
-            this.testCommand1.Size = new System.Drawing.Size(54, 49);
-            this.testCommand1.TabIndex = 6;
-            this.testCommand1.Text = "Bios\r\nname";
-            this.testCommand1.UseVisualStyleBackColor = true;
-            this.testCommand1.Visible = false;
-            this.testCommand1.Click += new System.EventHandler(this.testCommand1_Click);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(132, 389);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(82, 12);
-            this.label4.TabIndex = 7;
-            this.label4.Text = "battery index :??";
-            this.label4.UseWaitCursor = true;
-            this.label4.Visible = false;
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(308, 397);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(50, 49);
-            this.button3.TabIndex = 9;
-            this.button3.Text = "clear";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Visible = false;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
             // label_time
             // 
             this.label_time.AutoSize = true;
@@ -181,30 +119,30 @@ namespace WindowsFormsApp3
             // 
             // dataGridView1
             // 
-            dataGridViewCellStyle10.Font = new System.Drawing.Font("PMingLiU", 15F);
-            this.dataGridView1.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle10;
-            dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle11.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle11.Font = new System.Drawing.Font("PMingLiU", 15F);
-            dataGridViewCellStyle11.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle11.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle11.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("PMingLiU", 15F);
+            this.dataGridView1.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("PMingLiU", 15F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.indexGrid,
             this.powerGrid,
             this.voltageGrid,
             this.ampereGrid});
-            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle12.Font = new System.Drawing.Font("PMingLiU", 15F);
-            dataGridViewCellStyle12.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("PMingLiU", 15F);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle3;
             this.dataGridView1.Location = new System.Drawing.Point(12, 149);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 24;
@@ -299,13 +237,12 @@ namespace WindowsFormsApp3
             this.comboBox_reflashRate.Size = new System.Drawing.Size(63, 20);
             this.comboBox_reflashRate.TabIndex = 15;
             this.comboBox_reflashRate.Text = "Normal";
-            this.comboBox_reflashRate.SelectedIndexChanged += new System.EventHandler(this.comboBox_reflashRate_SelectedIndexChanged);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(523, 302);
+            this.ClientSize = new System.Drawing.Size(523, 306);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.comboBox_reflashRate);
             this.Controls.Add(this.label8);
@@ -313,13 +250,8 @@ namespace WindowsFormsApp3
             this.Controls.Add(this.label6);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.label_time);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.testCommand1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.comboBox_comPortSelecter);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.button2);
             this.Controls.Add(this.label_biosName);
             this.Controls.Add(this.button1);
             this.MaximizeBox = false;
@@ -337,13 +269,8 @@ namespace WindowsFormsApp3
 
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label_biosName;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox comboBox_comPortSelecter;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button testCommand1;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Label label_time;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.DataGridViewTextBoxColumn indexGrid;

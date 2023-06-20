@@ -18,14 +18,21 @@ namespace WindowsFormsApp3
         private SerialPort My_SerialPort;
         private bool Console_receiving = false;
         int getDataType = -1;
-        private Thread t, sendData;
+        private Thread receiveData, sendData;
 
         public delegate void UpdateViewGrid(object a, object b, object c, object d);
 
-        private static string folder = System.Environment.CurrentDirectory;
+        private static string folder = Environment.CurrentDirectory;
         private static string fileName = "\\batteryInformation.txt";
-        // Fullpath. 
-        string fullPath = folder + fileName;
+        string fullPath = folder + fileName;    // Fullpath
+
+
+        Byte batteryIndex = 0, batteryIndexCks = 0x1b, batteryState = 0x30;
+
+        int batterStatecounter = 0;
+        int[] batterStateC = new int[3];
+        string battryStateTemp = "";
+        int batteryError = 0;
 
         public Form1()
         {
@@ -35,21 +42,6 @@ namespace WindowsFormsApp3
         private void Form1_Load(object sender, EventArgs e)
         {
 
-        }
-
-        private void Form1_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            try
-            {
-                My_SerialPort.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-
-            Console_receiving = false;
-            t.Abort();
         }
 
         public String GetTimestamp(DateTime value)
@@ -80,17 +72,42 @@ namespace WindowsFormsApp3
             }
 
             Console_receiving = false;
-            t.Abort();
+            receiveData.Abort();
+            sendData.Abort();
         }
+
         public void updateViewGrid(object a, object b, object c, object d)
         {
             dataGridView1.Rows.Add(a, b, c, d);
         }
 
-        int batterStatecounter = 0;
-        int[] batterStateC = new int[3];
-        string battryStateTemp = "";
-        int batteryError = 0;
+        public void serialWrite(byte a, byte b, byte c, byte d)
+        {
+            try
+            {
+                Byte[] buffer = new Byte[4] { a, b, c, d };     //BIOS name
+                My_SerialPort.Write(buffer, 0, buffer.Length);
+            }
+            catch (Exception ex)
+            {
+                CloseComport();
+                MessageBox.Show(ex.Message);
+            }
+        }
+        public void serialWrite(byte a, byte b, byte c, byte d, byte e)
+        {
+            try
+            {
+                Byte[] buffer = new Byte[5] { a, b, c, d, e};     //BIOS name
+                My_SerialPort.Write(buffer, 0, buffer.Length);
+            }
+            catch (Exception ex)
+            {
+                CloseComport();
+                MessageBox.Show(ex.Message);
+            }
+        }
+
         private void DoReceive()
         {
             Byte[] buffer = new Byte[32];
@@ -114,7 +131,7 @@ namespace WindowsFormsApp3
                             string buf = Encoding.ASCII.GetString(buffer);
                             label_biosName.Text += buf;
                         }
-                        else if (getDataType == 2)
+                        else if (getDataType == 2)  //for parse battery state
                         {
                             if (buffer[1] == 0x04 || buffer[1] == 0x20 || buffer[1] == 0x00 || buffer[1] == 0xDD)
                             {
@@ -182,9 +199,8 @@ namespace WindowsFormsApp3
             }
         }
 
-        Byte batteryIndex = 0, batteryIndexCks = 0x1b, batteryState = 0x30;
         void DoSend()
-        {///dsfsdsf
+        {
             while (true)
             {
                 switch (getDataType)
@@ -192,36 +208,14 @@ namespace WindowsFormsApp3
                     case 100:     //get BIOS BOM and BIOS name
                         
                         lable_biosBom.Text = "";
-                        getDataType = 0;        //parse method
-                        
-                        try
-                        {
-                            Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x00, 0x5c };     //BIOS BOM
-                            My_SerialPort.Write(buffer, 0, buffer.Length);
-                        }
-                        catch (Exception ex)
-                        {
-                            CloseComport();
-                            MessageBox.Show(ex.Message);
-                        }
-
-                        Thread.Sleep(750);      //wait for receive data
+                        getDataType = 0;                            //parse method
+                        serialWrite(0x04, 0xA0, 0x00, 0x5c);        //BIOS BOM
+                        Thread.Sleep(750);                          //wait for receive data
 
                         label_biosName.Text = "";
-                        getDataType = 1;        //parse method
-
-                        try
-                        {
-                            Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x01, 0x5b };     //BIOS name
-                            My_SerialPort.Write(buffer, 0, buffer.Length);
-                        }
-                        catch (Exception ex)
-                        {
-                            CloseComport();
-                            MessageBox.Show(ex.Message);
-                        }
-
-                        Thread.Sleep(500);      //wait for receive data
+                        getDataType = 1;                            //parse method
+                        serialWrite(0x04, 0xA0, 0x01, 0x5b);        //BIOS name 
+                        Thread.Sleep(500);                          //wait for receive data
 
                         getDataType = -1;       //do nothing
 
@@ -232,26 +226,8 @@ namespace WindowsFormsApp3
 
                         break;
 
-                    case 101:     //BIOS product name:
-                        //label_biosName.Text = "";
-                        //label_biosName.Text += "BIOS product name: ";
-                        //try
-                        //{
-                        //    Byte[] buffer = new Byte[4] { 0x04, 0xA0, 0x01, 0x5b };
-                        //    My_SerialPort.Write(buffer, 0, buffer.Length);
-                        //}
-                        //catch (Exception ex)
-                        //{
-                        //    CloseComport();
-                        //    MessageBox.Show(ex.Message);
-                        //}
+                    case 101:    
 
-                        //getDataType = 1;
-                        //Thread.Sleep(500);     //wait for receive data
-                        //getDataType = -1;
-
-                        //GetTimestampLabel();
-                        //recordData2txt(label_biosName.Text);
                         break;
 
                     case 102:     //get battery state
@@ -266,19 +242,9 @@ namespace WindowsFormsApp3
                         getDataType = 2;
                         for (int i = 0; i < 12; i++)
                         {
-                            try
-                            {   //                          Length  Cmd     index       battery         checksum
-                                Byte[] buffer = new Byte[5] { 0x05, 0xB0, batteryState, batteryIndex, batteryIndexCks };
-                                My_SerialPort.Write(buffer, 0, buffer.Length);
-                            }
-                            catch (Exception ex)
-                            {
-                                CloseComport();
-                                MessageBox.Show(ex.Message);
-                            }
-                            Thread.Sleep(300);     //wait for receive data
-
-                            //label4.Text = "battery index: " + batteryIndex.ToString();
+                            //         Length  Cmd     index       battery         checksum
+                            serialWrite(0x05, 0xB0, batteryState, batteryIndex, batteryIndexCks);
+                            Thread.Sleep(300);          //wait for receive data
 
                             batteryState++;
                             batteryIndexCks--;
@@ -330,43 +296,10 @@ namespace WindowsFormsApp3
             }
         }
 
-        //clean UI
-        private void button3_Click(object sender, EventArgs e)
-        {
-            label_biosName.Text = "";
-        }
-
-        //read BIOS product name
-        private void testCommand1_Click(object sender, EventArgs e)
-        {
-            getDataType = 101;
-        }
-
-        private void comboBox_reflashRate_SelectedIndexChanged(object sender, EventArgs e)
-        {/*
-            if (comboBox_reflashRate.Text == "Stop")
-            {
-                sendData.Abort();
-            }
-            else
-            {
-                sendData = new Thread(DoSend);
-                sendData.IsBackground = true;
-                sendData.Start();
-
-            }*/
-        }
-
         //read BIOS BOM
         public void testCommand()
         {
             getDataType = 100;
-        }        
-        
-        //read battery state
-        private void button2_Click(object sender, EventArgs e)
-        {
-            getDataType = 102;
         }
 
         //open serial port
@@ -426,9 +359,9 @@ namespace WindowsFormsApp3
                     sendData.Start();
 
                     //開啟執行續做接收動作
-                    t = new Thread(DoReceive);
-                    t.IsBackground = true;
-                    t.Start();
+                    receiveData = new Thread(DoReceive);
+                    receiveData.IsBackground = true;
+                    receiveData.Start();
 
                     testCommand();
                 }
