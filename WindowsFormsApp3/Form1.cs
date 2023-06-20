@@ -114,7 +114,6 @@ namespace WindowsFormsApp3
             try
             {
                 while (Console_receiving)
-                //while (My_SerialPort.DataReceived)
                 {
                     if (My_SerialPort.BytesToRead > 0)
                     {
@@ -212,12 +211,18 @@ namespace WindowsFormsApp3
                         serialWrite(0x04, 0xA0, 0x00, 0x5c);        //BIOS BOM
                         Thread.Sleep(750);                          //wait for receive data
 
+                        if (lable_biosBom.Text == "")
+                        {
+                            MessageBox.Show("Please check power and serial line are connected!", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            break;
+                        }
+
                         label_biosName.Text = "";
                         getDataType = 1;                            //parse method
                         serialWrite(0x04, 0xA0, 0x01, 0x5b);        //BIOS name 
                         Thread.Sleep(500);                          //wait for receive data
 
-                        getDataType = -1;       //do nothing
+                        getDataType = -1;                           //do nothing
 
                         GetTimestampLabel();
                         File.AppendAllText(fullPath, Environment.NewLine + label6 + " " + lable_biosBom.Text);
@@ -238,8 +243,7 @@ namespace WindowsFormsApp3
                         this.dataGridView1.DataSource = null;
                         this.dataGridView1.Rows.Clear();
 
-                        //label1.Text = "";
-                        getDataType = 2;
+                        getDataType = 2;        //parse method
                         for (int i = 0; i < 12; i++)
                         {
                             //         Length  Cmd     index       battery         checksum
@@ -276,7 +280,7 @@ namespace WindowsFormsApp3
                 if (comboBox_reflashRate.Text == "Normal")
                 {
                     Thread.Sleep(1500);  
-                    getDataType = 102;
+                    getDataType = 102;      //get battery state
                 }
                 else if (comboBox_reflashRate.Text == "Rapid")
                 {
@@ -289,9 +293,9 @@ namespace WindowsFormsApp3
                 }
                 else if (comboBox_reflashRate.Text == "Stop") 
                 {
-                    getDataType = -1;
+                    getDataType = -1;       //do nothing
                 }
-                Thread.Sleep(100);      //for reduce cpu utilization
+                Thread.Sleep(100);      //for reducing cpu utilization
 
             }
         }
@@ -302,8 +306,7 @@ namespace WindowsFormsApp3
             getDataType = 100;
         }
 
-        //open serial port
-        private void button1_Click(object sender, EventArgs e)
+        private void button_openSerial_Click(object sender, EventArgs e)
         {
             My_SerialPort = new SerialPort();
 
@@ -312,7 +315,7 @@ namespace WindowsFormsApp3
                 CloseComport();
             }
 
-            //設定 Serial Port 參數
+            //config Serial Port
             My_SerialPort.PortName = comboBox_comPortSelecter.Text;
             My_SerialPort.BaudRate = 9600;
             My_SerialPort.DataBits = 8;
@@ -322,7 +325,7 @@ namespace WindowsFormsApp3
             {
                 int error = 0;
 
-                //開啟 Serial Port
+                //open Serial Port
                 try
                 {
                     My_SerialPort.Open();
@@ -337,14 +340,19 @@ namespace WindowsFormsApp3
                 {
                     try
                     {
-                        // Check if file already exists. If yes, delete it.     
+                        // Check if file already exists.    
                         if (File.Exists(fullPath))
                         {
-                            File.Delete(fullPath);
+                            //File.Delete(fullPath);
+                            GetTimestampLabel();
+                            recordData2txt("Open serial port");
                         }
-                        // Create a new file     
-                        using (FileStream fs = File.Create(fullPath))
+                        else
                         {
+                            // Create a new file     
+                            using (FileStream fs = File.Create(fullPath))
+                            {
+                            }
                         }
                     }
                     catch (Exception Ex)
@@ -358,13 +366,16 @@ namespace WindowsFormsApp3
                     sendData.IsBackground = true;
                     sendData.Start();
 
-                    //開啟執行續做接收動作
                     receiveData = new Thread(DoReceive);
                     receiveData.IsBackground = true;
                     receiveData.Start();
 
                     testCommand();
                 }
+            }
+            else
+            {
+                MessageBox.Show("Serial port has been opened.", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
