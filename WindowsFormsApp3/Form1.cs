@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GemBox.Spreadsheet;
+using GemBox.Spreadsheet.Tables;
 
 namespace WindowsFormsApp3
 {
@@ -34,9 +36,18 @@ namespace WindowsFormsApp3
         string battryStateTemp = "";
         int batteryError = 0;
 
+
+        var workbook = new ExcelFile();
+        var worksheet = workbook.Worksheets.Add("Tables");
+
+
         public Form1()
         {
             InitializeComponent();
+            // If using the Professional version, put your serial key below.
+            SpreadsheetInfo.SetLicense("FREE-LIMITED-KEY");
+
+           // var worksheet = workbook.Worksheets.Add("Tables");
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -225,8 +236,8 @@ namespace WindowsFormsApp3
                         getDataType = -1;                           //do nothing
 
                         GetTimestampLabel();
-                        File.AppendAllText(fullPath, Environment.NewLine + label6 + " " + lable_biosBom.Text);
-                        File.AppendAllText(fullPath, Environment.NewLine + label8 + " " + label_biosName.Text);
+                        File.AppendAllText(fullPath, Environment.NewLine + label6.Text + " " + lable_biosBom.Text);
+                        File.AppendAllText(fullPath, Environment.NewLine + label8.Text + " " + label_biosName.Text);
                         File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
 
                         break;
