@@ -206,7 +206,7 @@ namespace WindowsFormsApp3
                                 batterStateC[batterStatecounter] = -1;
                                 batteryError = 1;
 
-                                worksheet[batteryIndex].Cells[excelRowIndex, batteryState-0x29].Value = -1;
+                                worksheet[batteryIndex].Cells[excelRowIndex, batteryState - 0x30].Value = -1;
                             }
                             else
                             {
@@ -261,7 +261,7 @@ namespace WindowsFormsApp3
                                     this.BeginInvoke(testUpdateViewGrid, new Object[] { (int)batteryIndex, "NA", "NA", "NA" });
                                     batteryError = 0;
                                 }
-                                excelRowIndex++;
+                                
                             }
                         }
                         Array.Resize(ref buffer, 1024);
@@ -342,6 +342,8 @@ namespace WindowsFormsApp3
                             }
                         }
                         getDataType = -1;
+
+                        excelRowIndex++;
 
                         GetTimestampLabel();
                         recordData2txt(battryStateTemp);
