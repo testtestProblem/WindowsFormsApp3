@@ -36,10 +36,9 @@ namespace WindowsFormsApp3
         string battryStateTemp = "";
         int batteryError = 0;
 
-
-        var workbook = new ExcelFile();
-        var worksheet = workbook.Worksheets.Add("Tables");
-
+        ExcelFile workbook;
+        ExcelWorksheet[] worksheet=new ExcelWorksheet[4];
+        int excelRowIndex = 2;
 
         public Form1()
         {
@@ -47,9 +46,67 @@ namespace WindowsFormsApp3
             // If using the Professional version, put your serial key below.
             SpreadsheetInfo.SetLicense("FREE-LIMITED-KEY");
 
-           // var worksheet = workbook.Worksheets.Add("Tables");
-        }
+            // var worksheet = workbook.Worksheets.Add("Tables");
+            workbook = new ExcelFile();
+            worksheet[0] = workbook.Worksheets.Add("Battery 0");
+            worksheet[1] = workbook.Worksheets.Add("Battery 1");
+            worksheet[2] = workbook.Worksheets.Add("Battery 2");
+            worksheet[3] = workbook.Worksheets.Add("Battery 3");
+            var data = new object[1, 4] { { "Index", "Power", "Votage", "Ampere" } };
+            for (int j = 0; j < 4; j++) 
+                for (int i = 0; i < 4; i++) 
+                    worksheet[j].Cells[0, i].Value = data[0, i];
+            //workbook.Save("batteryState.xlsx");
 
+            //workbook = ExcelFile.Load("batteryState.xlsx");
+
+            //this.FormClosing += Form1_FormClosing;
+        }
+        public bool ClosedByXButtonOrAltF4 { get; private set; }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (ClosedByXButtonOrAltF4)
+                MessageBox.Show("Closed by X or Alt+F4");
+            else
+            {
+                workbook.Save("batteryState.xlsx");
+                MessageBox.Show("Closed by calling Close()");
+            }
+        }
+        /*
+        private void Form1_FormClosing(Object sender, FormClosingEventArgs e)
+        {
+            //In case windows is trying to shut down, don't hold the process up
+            if (e.CloseReason == CloseReason.UserClosing) return;
+
+            if ((sender as Form).ActiveControl is Button)
+            {
+                //CloseButton
+                switch (MessageBox.Show(this, "Are you sure?", "Do you still want ... ?", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+                {
+                    //Stay on this form
+                    case DialogResult.No:
+                        e.Cancel = true;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                //The X has been clicked
+                switch (MessageBox.Show(this, "Are you sure?", "Do you still want ... ?", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
+                {
+                    //Stay on this form
+                    case DialogResult.No:
+                        e.Cancel = true;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }*/
         private void Form1_Load(object sender, EventArgs e)
         {
 
@@ -148,6 +205,8 @@ namespace WindowsFormsApp3
                                 battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + "no battery\n";
                                 batterStateC[batterStatecounter] = -1;
                                 batteryError = 1;
+
+                                worksheet[batteryIndex].Cells[excelRowIndex, batteryState-0x29].Value = -1;
                             }
                             else
                             {
@@ -156,6 +215,8 @@ namespace WindowsFormsApp3
                                     //     label1.Text += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
                                     battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
                                     batterStateC[batterStatecounter] = buffer[2];
+
+                                    worksheet[batteryIndex].Cells[excelRowIndex, 1].Value = batterStateC[batterStatecounter];
                                 }
                                 else if ((batteryState) == 0x31)
                                 {
@@ -165,6 +226,8 @@ namespace WindowsFormsApp3
                                     //label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mV\n";
                                     battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + temp_v.ToString() + "mV\n";
                                     batterStateC[batterStatecounter] = ((int)buffer[2] + (((int)buffer[3]) << 8));
+
+                                    worksheet[batteryIndex].Cells[excelRowIndex, 2].Value = batterStateC[batterStatecounter];
 
                                     if (temp_v > 10000) batteryError = 1;
                                 }
@@ -176,6 +239,8 @@ namespace WindowsFormsApp3
                                     //    label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mA\n";
                                     battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + temp_a.ToString() + "mA\n";
                                     batterStateC[batterStatecounter] = ((int)buffer[2] + (((int)buffer[3]) << 8));
+
+                                    worksheet[batteryIndex].Cells[excelRowIndex, 3].Value = batterStateC[batterStatecounter];
 
                                     if (temp_a > 10000) batteryError = 1;
                                 }
@@ -196,6 +261,7 @@ namespace WindowsFormsApp3
                                     this.BeginInvoke(testUpdateViewGrid, new Object[] { (int)batteryIndex, "NA", "NA", "NA" });
                                     batteryError = 0;
                                 }
+                                excelRowIndex++;
                             }
                         }
                         Array.Resize(ref buffer, 1024);
