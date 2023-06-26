@@ -28,7 +28,6 @@ namespace WindowsFormsApp3
         private static string fileName = "\\batteryInformation.txt";
         string fullPath = folder + fileName;    // Fullpath
 
-
         Byte batteryIndex = 0, batteryIndexCks = 0x1b, batteryState = 0x30;
 
         int batterStatecounter = 0;
@@ -43,19 +42,7 @@ namespace WindowsFormsApp3
         public Form1()
         {
             InitializeComponent();
-            // If using the Professional version, put your serial key below.
-            SpreadsheetInfo.SetLicense("FREE-LIMITED-KEY");
-
-            // var worksheet = workbook.Worksheets.Add("Tables");
-            workbook = new ExcelFile();
-            worksheet[0] = workbook.Worksheets.Add("Battery 0");
-            worksheet[1] = workbook.Worksheets.Add("Battery 1");
-            worksheet[2] = workbook.Worksheets.Add("Battery 2");
-            worksheet[3] = workbook.Worksheets.Add("Battery 3");
-            var data = new object[1, 4] { { "Index", "Power", "Votage", "Ampere" } };
-            for (int j = 0; j < 4; j++) 
-                for (int i = 0; i < 4; i++) 
-                    worksheet[j].Cells[0, i].Value = data[0, i];
+            
             //workbook.Save("batteryState.xlsx");
 
             //workbook = ExcelFile.Load("batteryState.xlsx");
@@ -63,7 +50,7 @@ namespace WindowsFormsApp3
             //this.FormClosing += Form1_FormClosing;
         }
         public bool ClosedByXButtonOrAltF4 { get; private set; }
-
+        /*
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             if (ClosedByXButtonOrAltF4)
@@ -74,6 +61,7 @@ namespace WindowsFormsApp3
                 MessageBox.Show("Closed by calling Close()");
             }
         }
+        */
         /*
         private void Form1_FormClosing(Object sender, FormClosingEventArgs e)
         {
@@ -109,7 +97,19 @@ namespace WindowsFormsApp3
         }*/
         private void Form1_Load(object sender, EventArgs e)
         {
+            // If using the Professional version, put your serial key below.
+            SpreadsheetInfo.SetLicense("FREE-LIMITED-KEY");
 
+            // var worksheet = workbook.Worksheets.Add("Tables");
+            workbook = new ExcelFile();
+            worksheet[0] = workbook.Worksheets.Add("Battery 0");
+            worksheet[1] = workbook.Worksheets.Add("Battery 1");
+            worksheet[2] = workbook.Worksheets.Add("Battery 2");
+            worksheet[3] = workbook.Worksheets.Add("Battery 3");
+            var data = new object[1, 3] { { "Power", "Votage", "Ampere" } };
+            for (int j = 0; j < 4; j++)
+                for (int i = 0; i < 3; i++)
+                    worksheet[j].Cells[0, i].Value = data[0, i];
         }
 
         public String GetTimestamp(DateTime value)
@@ -216,7 +216,7 @@ namespace WindowsFormsApp3
                                     battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
                                     batterStateC[batterStatecounter] = buffer[2];
 
-                                    worksheet[batteryIndex].Cells[excelRowIndex, 1].Value = batterStateC[batterStatecounter];
+                                    worksheet[batteryIndex].Cells[excelRowIndex, 0].Value = batterStateC[batterStatecounter];
                                 }
                                 else if ((batteryState) == 0x31)
                                 {
@@ -227,7 +227,7 @@ namespace WindowsFormsApp3
                                     battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + temp_v.ToString() + "mV\n";
                                     batterStateC[batterStatecounter] = ((int)buffer[2] + (((int)buffer[3]) << 8));
 
-                                    worksheet[batteryIndex].Cells[excelRowIndex, 2].Value = batterStateC[batterStatecounter];
+                                    worksheet[batteryIndex].Cells[excelRowIndex, 1].Value = batterStateC[batterStatecounter];
 
                                     if (temp_v > 10000) batteryError = 1;
                                 }
@@ -240,7 +240,7 @@ namespace WindowsFormsApp3
                                     battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + temp_a.ToString() + "mA\n";
                                     batterStateC[batterStatecounter] = ((int)buffer[2] + (((int)buffer[3]) << 8));
 
-                                    worksheet[batteryIndex].Cells[excelRowIndex, 3].Value = batterStateC[batterStatecounter];
+                                    worksheet[batteryIndex].Cells[excelRowIndex, 2].Value = batterStateC[batterStatecounter];
 
                                     if (temp_a > 10000) batteryError = 1;
                                 }
