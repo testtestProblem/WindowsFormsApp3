@@ -50,7 +50,7 @@ namespace WindowsFormsApp3
             //this.FormClosing += Form1_FormClosing;
         }
         public bool ClosedByXButtonOrAltF4 { get; private set; }
-        /*
+        
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             if (ClosedByXButtonOrAltF4)
@@ -58,43 +58,11 @@ namespace WindowsFormsApp3
             else
             {
                 workbook.Save("batteryState.xlsx");
-                MessageBox.Show("Closed by calling Close()");
+                //MessageBox.Show("Closed by calling Close()");
             }
         }
-        */
-        /*
-        private void Form1_FormClosing(Object sender, FormClosingEventArgs e)
-        {
-            //In case windows is trying to shut down, don't hold the process up
-            if (e.CloseReason == CloseReason.UserClosing) return;
 
-            if ((sender as Form).ActiveControl is Button)
-            {
-                //CloseButton
-                switch (MessageBox.Show(this, "Are you sure?", "Do you still want ... ?", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
-                {
-                    //Stay on this form
-                    case DialogResult.No:
-                        e.Cancel = true;
-                        break;
-                    default:
-                        break;
-                }
-            }
-            else
-            {
-                //The X has been clicked
-                switch (MessageBox.Show(this, "Are you sure?", "Do you still want ... ?", MessageBoxButtons.YesNo, MessageBoxIcon.Question))
-                {
-                    //Stay on this form
-                    case DialogResult.No:
-                        e.Cancel = true;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }*/
+
         private void Form1_Load(object sender, EventArgs e)
         {
             // If using the Professional version, put your serial key below.
@@ -106,10 +74,15 @@ namespace WindowsFormsApp3
             worksheet[1] = workbook.Worksheets.Add("Battery 1");
             worksheet[2] = workbook.Worksheets.Add("Battery 2");
             worksheet[3] = workbook.Worksheets.Add("Battery 3");
-            var data = new object[1, 3] { { "Power", "Votage", "Ampere" } };
+
+            var data = new object[1, 4] { { "Power(%)", "Votage(mV)", "Ampere(mA)", "Time" } };
             for (int j = 0; j < 4; j++)
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 4; i++)
+                {
                     worksheet[j].Cells[0, i].Value = data[0, i];
+                    //worksheet[j].Columns[i].SetWidth(144, LengthUnit.Pixel); //Doing this will change ui
+                }
+
         }
 
         public String GetTimestamp(DateTime value)
@@ -213,7 +186,7 @@ namespace WindowsFormsApp3
                                 if ((batteryState) == 0x30)
                                 {
                                     //     label1.Text += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
-                                    battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
+                                    battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% battery level\n";
                                     batterStateC[batterStatecounter] = buffer[2];
 
                                     worksheet[batteryIndex].Cells[excelRowIndex, 0].Value = batterStateC[batterStatecounter];
@@ -261,7 +234,8 @@ namespace WindowsFormsApp3
                                     this.BeginInvoke(testUpdateViewGrid, new Object[] { (int)batteryIndex, "NA", "NA", "NA" });
                                     batteryError = 0;
                                 }
-                                
+
+                                worksheet[batteryIndex].Cells[excelRowIndex, 3].Value = GetTimestamp(DateTime.Now);
                             }
                         }
                         Array.Resize(ref buffer, 1024);
@@ -290,7 +264,8 @@ namespace WindowsFormsApp3
 
                         if (lable_biosBom.Text == "")
                         {
-                            MessageBox.Show("Please check power and serial line are connected!", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("Please checking power and serial line are connected!", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            System.Environment.Exit(0);
                             break;
                         }
 
