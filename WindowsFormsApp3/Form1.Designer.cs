@@ -47,6 +47,8 @@ namespace WindowsFormsApp3
             this.label8 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox_reflashRate = new System.Windows.Forms.ComboBox();
+            this.checkBox_text = new System.Windows.Forms.CheckBox();
+            this.checkBox_excel = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -238,11 +240,33 @@ namespace WindowsFormsApp3
             this.comboBox_reflashRate.TabIndex = 15;
             this.comboBox_reflashRate.Text = "Normal";
             // 
+            // checkBox_text
+            // 
+            this.checkBox_text.AutoSize = true;
+            this.checkBox_text.Location = new System.Drawing.Point(419, 97);
+            this.checkBox_text.Name = "checkBox_text";
+            this.checkBox_text.Size = new System.Drawing.Size(41, 16);
+            this.checkBox_text.TabIndex = 17;
+            this.checkBox_text.Text = "text";
+            this.checkBox_text.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_excel
+            // 
+            this.checkBox_excel.AutoSize = true;
+            this.checkBox_excel.Location = new System.Drawing.Point(419, 116);
+            this.checkBox_excel.Name = "checkBox_excel";
+            this.checkBox_excel.Size = new System.Drawing.Size(48, 16);
+            this.checkBox_excel.TabIndex = 18;
+            this.checkBox_excel.Text = "excel";
+            this.checkBox_excel.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(523, 306);
+            this.Controls.Add(this.checkBox_excel);
+            this.Controls.Add(this.checkBox_text);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.comboBox_reflashRate);
             this.Controls.Add(this.label8);
@@ -282,6 +306,8 @@ namespace WindowsFormsApp3
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox comboBox_reflashRate;
+        private System.Windows.Forms.CheckBox checkBox_text;
+        private System.Windows.Forms.CheckBox checkBox_excel;
     }
 }
 

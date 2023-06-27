@@ -50,7 +50,7 @@ namespace WindowsFormsApp3
             //this.FormClosing += Form1_FormClosing;
         }
         public bool ClosedByXButtonOrAltF4 { get; private set; }
-        /*
+        
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             if (ClosedByXButtonOrAltF4)
@@ -58,10 +58,10 @@ namespace WindowsFormsApp3
             else
             {
                 workbook.Save("batteryState.xlsx");
-                MessageBox.Show("Closed by calling Close()");
+                //MessageBox.Show("Closed by calling Close()");
             }
         }
-        */
+        
         /*
         private void Form1_FormClosing(Object sender, FormClosingEventArgs e)
         {
@@ -106,10 +106,16 @@ namespace WindowsFormsApp3
             worksheet[1] = workbook.Worksheets.Add("Battery 1");
             worksheet[2] = workbook.Worksheets.Add("Battery 2");
             worksheet[3] = workbook.Worksheets.Add("Battery 3");
-            var data = new object[1, 3] { { "Power", "Votage", "Ampere" } };
+
+            var data = new object[1, 4] { { "Power(%)", "Votage(mV)", "Ampere(mA)", "Time" } };
             for (int j = 0; j < 4; j++)
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 4; i++)
+                {
                     worksheet[j].Cells[0, i].Value = data[0, i];
+                    // worksheet[j].Columns[i].SetWidth(144,LengthUnit.Pixel);//Doing this will change ui
+                }
+
+            checkBox_excel.Enabled = false;
         }
 
         public String GetTimestamp(DateTime value)
@@ -261,7 +267,7 @@ namespace WindowsFormsApp3
                                     this.BeginInvoke(testUpdateViewGrid, new Object[] { (int)batteryIndex, "NA", "NA", "NA" });
                                     batteryError = 0;
                                 }
-                                
+                                worksheet[batteryIndex].Cells[excelRowIndex, 3].Value = GetTimestamp(DateTime.Now);
                             }
                         }
                         Array.Resize(ref buffer, 1024);
@@ -417,29 +423,40 @@ namespace WindowsFormsApp3
 
                 if (error == 0)
                 {
-                    try
-                    {
-                        // Check if file already exists.    
-                        if (File.Exists(fullPath))
+                    Console_receiving = true;
+
+                    
+
+                    //if(checkBox_excel.Checked == true)
+                    //{
+ 
+                    //}
+                    //if (checkBox_text.Checked == true)
+                    //{
+                        try
                         {
-                            //File.Delete(fullPath);
-                            GetTimestampLabel();
-                            recordData2txt("Open serial port");
-                        }
-                        else
-                        {
-                            // Create a new file     
-                            using (FileStream fs = File.Create(fullPath))
+                            // Check if file already exists.    
+                            if (File.Exists(fullPath))
                             {
+                                //File.Delete(fullPath);
+                                GetTimestampLabel();
+                                recordData2txt("Open serial port");
+                            }
+                            else
+                            {
+                                // Create a new file     
+                                using (FileStream fs = File.Create(fullPath))
+                                {
+                                }
                             }
                         }
-                    }
-                    catch (Exception Ex)
-                    {
-                        Console.WriteLine(Ex.ToString());
-                    }
+                        catch (Exception Ex)
+                        {
+                            Console.WriteLine(Ex.ToString());
+                        }
 
-                    Console_receiving = true;
+                        checkBox_text.Enabled = false;
+                    //}
 
                     sendData = new Thread(DoSend);
                     sendData.IsBackground = true;
@@ -459,3 +476,5 @@ namespace WindowsFormsApp3
         }
     }
 }
+
+
