@@ -26,7 +26,8 @@ namespace WindowsFormsApp3
 
         private static string folder = Environment.CurrentDirectory;
         private static string fileName = "\\batteryInformation.txt";
-        string fullPath = folder + fileName;    // Fullpath
+        private static string fileName2 = "\\batteryInformation"+ (GetTimestamp(DateTime.Now).Replace("/","")).Replace(":","") + ".txt";
+        string fullPath = folder + fileName2;    // Fullpath
 
         Byte batteryIndex = 0, batteryIndexCks = 0x1b, batteryState = 0x30;
 
@@ -37,17 +38,11 @@ namespace WindowsFormsApp3
 
         ExcelFile workbook;
         ExcelWorksheet[] worksheet=new ExcelWorksheet[4];
-        int excelRowIndex = 2;
+        int excelRowIndex = 1;
 
         public Form1()
         {
             InitializeComponent();
-            
-            //workbook.Save("batteryState.xlsx");
-
-            //workbook = ExcelFile.Load("batteryState.xlsx");
-
-            //this.FormClosing += Form1_FormClosing;
         }
         public bool ClosedByXButtonOrAltF4 { get; private set; }
         
@@ -57,6 +52,10 @@ namespace WindowsFormsApp3
                 MessageBox.Show("Closed by X or Alt+F4");
             else
             {
+                for (int j = 0; j < 4; j++)
+                    for (int i = 0; i < 4; i++)
+                        worksheet[j].Columns[i].SetWidth(144, LengthUnit.Pixel); //Doing this will shrink UI, I don't know reason
+
                 workbook.Save("batteryState.xlsx");
                 //MessageBox.Show("Closed by calling Close()");
             }
@@ -85,10 +84,11 @@ namespace WindowsFormsApp3
 
         }
 
-        public String GetTimestamp(DateTime value)
+        static public String GetTimestamp(DateTime value)
         {
             return value.ToString("yyyy/MM/dd_HH:mm:ss");
         }
+
         public void GetTimestampLabel()
         {
             String timeStamp = GetTimestamp(DateTime.Now);
