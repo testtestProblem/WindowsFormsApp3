@@ -21,7 +21,7 @@ using GemBox.Spreadsheet.Tables;
 
 namespace WindowsFormsApp3
 {
-    public partial class Form1 : Form
+    public partial class S101TG_GCS : Form
     {
         private SerialPort My_SerialPort;
         private bool Console_receiving = false;
@@ -46,7 +46,7 @@ namespace WindowsFormsApp3
         ExcelWorksheet[] worksheet = new ExcelWorksheet[4];
         int excelRowIndex = 1;
 #endif
-        public Form1()
+        public S101TG_GCS()
         {
             InitializeComponent();
         }
@@ -182,18 +182,15 @@ namespace WindowsFormsApp3
                         }
                         else if (getDataType == 2)  //for parse battery state
                         {
-                            if (buffer[1] == 0x04 || buffer[1] == 0x20 || buffer[1] == 0x00 || buffer[1] == 0xDD)
+                            if (buffer[3] == 0x3C && buffer[2] == 0xF1)  
                             {
                                 battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + "no battery\n";
                                 batterStateC[batterStatecounter] = -1;
                                 batteryError = 1;
-#if EXCEL_ENABLE
-                                worksheet[batteryIndex].Cells[excelRowIndex, batteryState - 0x30].Value = -1;
-#endif
                             }
-                            else
+                            else 
                             {
-                                if ((batteryState) == 0x30)
+                                if ((buffer[1]) == 0x01)    //read battery remain power
                                 {
                                     //     label1.Text += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
                                     battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% battery level\n";
@@ -202,7 +199,7 @@ namespace WindowsFormsApp3
                                     worksheet[batteryIndex].Cells[excelRowIndex, 0].Value = batterStateC[batterStatecounter];
 #endif
                                 }
-                                else if ((batteryState) == 0x31)
+                                else if ((buffer[1]) == 0x02)   //read battery votage
                                 {
                                     int temp_v;
                                     temp_v = ((int)buffer[2] + (((int)buffer[3]) << 8));
@@ -213,9 +210,9 @@ namespace WindowsFormsApp3
 #if EXCEL_ENABLE
                                     worksheet[batteryIndex].Cells[excelRowIndex, 1].Value = batterStateC[batterStatecounter];
 #endif
-                                    if (temp_v > 10000) batteryError = 1;
+                                    if (temp_v > 20000) batteryError = 1;
                                 }
-                                else if ((batteryState) == 0x32)
+                                else if ((buffer[1]) == 0x03)   //read battery ampere
                                 {
                                     int temp_a;
                                     temp_a = ((int)buffer[2] + (((int)buffer[3]) << 8));
@@ -226,7 +223,7 @@ namespace WindowsFormsApp3
 #if EXCEL_ENABLE
                                     worksheet[batteryIndex].Cells[excelRowIndex, 2].Value = batterStateC[batterStatecounter];
 #endif
-                                    if (temp_a > 10000) batteryError = 1;
+                                    if (temp_a > 20000) batteryError = 1;
                                 }
                             }
 
@@ -302,32 +299,26 @@ namespace WindowsFormsApp3
                     case 102:     //get battery state
                         batteryIndex = 0;
                         batteryIndexCks = 0x1b;
-                        batteryState = 0x30;
+                        batteryState = 0x00;
 
                         this.dataGridView1.DataSource = null;
                         this.dataGridView1.Rows.Clear();
 
                         getDataType = 2;        //parse method
-                        for (int i = 0; i < 12; i++)
-                        {
-                            //         Length  Cmd     index       battery         checksum
-                            serialWrite(0x05, 0xB0, batteryState, batteryIndex, batteryIndexCks);
-                            Thread.Sleep(300);          //wait for receive data
 
-                            batteryState++;
-                            batteryIndexCks--;
+                        //         Length Cmd index   checksum
+                        serialWrite(0x04, 0xB0, 0x01, 0x4B);     //read battery remain power
+                        Thread.Sleep(600);          //wait for receive data
 
-                            if (batteryState == 0x33)
-                            {
-                                batteryState = 0x30;
-                                batteryIndex++;
+                        //         Length Cmd index   checksum
+                        serialWrite(0x04, 0xB0, 0x02, 0x4A);    //read battery votage
+                        Thread.Sleep(600);          //wait for receive data
 
-                                // batteryIndexCks = 0x1b;
-                                batteryIndexCks = (byte)(batteryIndexCks + 0x02);
+                        //         Length Cmd index   checksum
+                        serialWrite(0x04, 0xB0, 0x03, 0x49);    //read battery ampere
+                        Thread.Sleep(600);          //wait for receive data
 
-                                if (batteryIndex == 0x04) batteryState = 0x04;
-                            }
-                        }
+
                         getDataType = -1;
 #if EXCEL_ENABLE
                         excelRowIndex++;
