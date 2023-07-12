@@ -1,4 +1,7 @@
-﻿using System;
+﻿#define EXCEL_DISABLE
+
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,8 +13,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+#if EXCEL_ENABLE
 using GemBox.Spreadsheet;
 using GemBox.Spreadsheet.Tables;
+#endif
+
 
 namespace WindowsFormsApp3
 {
@@ -26,7 +32,7 @@ namespace WindowsFormsApp3
 
         private static string folder = Environment.CurrentDirectory;
         private static string fileName = "\\batteryInformation.txt";
-        private static string fileName2 = "\\batteryInformation"+ (GetTimestamp(DateTime.Now).Replace("/","")).Replace(":","") + ".txt";
+        private static string fileName2 = "\\batteryInformation" + (GetTimestamp(DateTime.Now).Replace("/", "")).Replace(":", "") + ".txt";
         string fullPath = folder + fileName2;    // Fullpath
 
         Byte batteryIndex = 0, batteryIndexCks = 0x1b, batteryState = 0x30;
@@ -35,11 +41,11 @@ namespace WindowsFormsApp3
         int[] batterStateC = new int[3];
         string battryStateTemp = "";
         int batteryError = 0;
-
+#if EXCEL_ENABLE
         ExcelFile workbook;
-        ExcelWorksheet[] worksheet=new ExcelWorksheet[4];
+        ExcelWorksheet[] worksheet = new ExcelWorksheet[4];
         int excelRowIndex = 1;
-
+#endif
         public Form1()
         {
             InitializeComponent();
@@ -48,8 +54,9 @@ namespace WindowsFormsApp3
         
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+#if EXCEL_ENABLE
             if (ClosedByXButtonOrAltF4)
-                MessageBox.Show("Closed by X or Alt+F4");
+            MessageBox.Show("Closed by X or Alt+F4");
             else
             {
                 for (int j = 0; j < 4; j++)
@@ -59,11 +66,13 @@ namespace WindowsFormsApp3
                 workbook.Save("batteryState.xlsx");
                 //MessageBox.Show("Closed by calling Close()");
             }
+#endif
         }
 
 
         private void Form1_Load(object sender, EventArgs e)
         {
+#if EXCEL_ENABLE
             // If using the Professional version, put your serial key below.
             SpreadsheetInfo.SetLicense("FREE-LIMITED-KEY");
 
@@ -81,7 +90,7 @@ namespace WindowsFormsApp3
                     worksheet[j].Cells[0, i].Value = data[0, i];
                     //worksheet[j].Columns[i].SetWidth(144, LengthUnit.Pixel); //Doing this will change ui
                 }
-
+#endif
         }
 
         static public String GetTimestamp(DateTime value)
@@ -178,8 +187,9 @@ namespace WindowsFormsApp3
                                 battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + "no battery\n";
                                 batterStateC[batterStatecounter] = -1;
                                 batteryError = 1;
-
+#if EXCEL_ENABLE
                                 worksheet[batteryIndex].Cells[excelRowIndex, batteryState - 0x30].Value = -1;
+#endif
                             }
                             else
                             {
@@ -188,8 +198,9 @@ namespace WindowsFormsApp3
                                     //     label1.Text += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
                                     battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% battery level\n";
                                     batterStateC[batterStatecounter] = buffer[2];
-
+#if EXCEL_ENABLE
                                     worksheet[batteryIndex].Cells[excelRowIndex, 0].Value = batterStateC[batterStatecounter];
+#endif
                                 }
                                 else if ((batteryState) == 0x31)
                                 {
@@ -199,9 +210,9 @@ namespace WindowsFormsApp3
                                     //label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mV\n";
                                     battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + temp_v.ToString() + "mV\n";
                                     batterStateC[batterStatecounter] = ((int)buffer[2] + (((int)buffer[3]) << 8));
-
+#if EXCEL_ENABLE
                                     worksheet[batteryIndex].Cells[excelRowIndex, 1].Value = batterStateC[batterStatecounter];
-
+#endif
                                     if (temp_v > 10000) batteryError = 1;
                                 }
                                 else if ((batteryState) == 0x32)
@@ -212,9 +223,9 @@ namespace WindowsFormsApp3
                                     //    label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mA\n";
                                     battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + temp_a.ToString() + "mA\n";
                                     batterStateC[batterStatecounter] = ((int)buffer[2] + (((int)buffer[3]) << 8));
-
+#if EXCEL_ENABLE
                                     worksheet[batteryIndex].Cells[excelRowIndex, 2].Value = batterStateC[batterStatecounter];
-
+#endif
                                     if (temp_a > 10000) batteryError = 1;
                                 }
                             }
@@ -234,8 +245,9 @@ namespace WindowsFormsApp3
                                     this.BeginInvoke(testUpdateViewGrid, new Object[] { (int)batteryIndex, "NA", "NA", "NA" });
                                     batteryError = 0;
                                 }
-
+#if EXCEL_ENABLE
                                 worksheet[batteryIndex].Cells[excelRowIndex, 3].Value = GetTimestamp(DateTime.Now);
+#endif
                             }
                         }
                         Array.Resize(ref buffer, 1024);
@@ -317,9 +329,9 @@ namespace WindowsFormsApp3
                             }
                         }
                         getDataType = -1;
-
+#if EXCEL_ENABLE
                         excelRowIndex++;
-
+#endif
                         GetTimestampLabel();
                         recordData2txt(battryStateTemp);
                         battryStateTemp = "";
