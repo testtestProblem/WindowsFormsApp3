@@ -1,5 +1,5 @@
 ﻿#define EXCEL_DISABLE
-#define TEXT_ENABLE
+#define TEXT_DISABLE
 
 using System;
 using System.Collections.Generic;
@@ -42,6 +42,8 @@ namespace WindowsFormsApp3
         string battryStateTemp = "";
         int batteryError = 0;
         int batteryReadError = 0;
+
+        int[] preBatteryPwVolAmp = new int[3] { 0, 0, 0 };
 #if EXCEL_ENABLE
         ExcelFile workbook;
         ExcelWorksheet[] worksheet = new ExcelWorksheet[4];
@@ -107,12 +109,13 @@ namespace WindowsFormsApp3
             File.AppendAllText(fullPath, Environment.NewLine + "time: " + timeStamp);
 #endif
         }
+#if TEXT_ENABLE
         public void recordData2txt(string data)
         {
             File.AppendAllText(fullPath, Environment.NewLine + data);
             File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
         }
-
+#endif
         public void CloseComport()
         {
             try
@@ -200,6 +203,8 @@ namespace WindowsFormsApp3
                                         //     label1.Text += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
                                         battryStateTemp += "battery " + "remain power" + ": " + buffer[2].ToString() + "% battery level\n";
                                         batterStateC[batteryIndex - 1] = buffer[2];
+
+                                        preBatteryPwVolAmp[0] = (int)buffer[2];
 #if EXCEL_ENABLE
                                     worksheet[batteryIndex].Cells[excelRowIndex, 0].Value = batterStateC[batterStatecounter];
 #endif
@@ -211,7 +216,9 @@ namespace WindowsFormsApp3
 
                                         //label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mV\n";
                                         battryStateTemp += "battery " + "voltage" + ": " + temp_v.ToString() + "mV\n";
-                                        batterStateC[batteryIndex - 1] = ((int)buffer[2] + (((int)buffer[3]) << 8));
+                                        batterStateC[batteryIndex - 1] = temp_v;
+
+                                        preBatteryPwVolAmp[1] = temp_v;
 #if EXCEL_ENABLE
                                     worksheet[batteryIndex].Cells[excelRowIndex, 1].Value = batterStateC[batterStatecounter];
 #endif
@@ -224,7 +231,9 @@ namespace WindowsFormsApp3
 
                                         //    label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mA\n";
                                         battryStateTemp += "battery " + "ampere" + ": " + temp_a.ToString() + "mA\n";
-                                        batterStateC[batteryIndex - 1] = ((int)buffer[2] + (((int)buffer[3]) << 8));
+                                        batterStateC[batteryIndex - 1] = temp_a;
+
+                                        preBatteryPwVolAmp[2] = temp_a;
 #if EXCEL_ENABLE
                                     worksheet[batteryIndex].Cells[excelRowIndex, 2].Value = batterStateC[batterStatecounter];
 #endif
@@ -239,7 +248,7 @@ namespace WindowsFormsApp3
                                 for (int i = 0; i < length; i++) File.AppendAllText(fullPath, " byte" + i.ToString() + ":" + buffer[i].ToString());
                                 File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
 #endif
-                                batterStateC[batteryIndex - 1] = -1;
+                                batterStateC[batteryIndex - 1] = preBatteryPwVolAmp[batteryIndex - 1];
                                 //batterStatecounter = batteryIndex-1;
                             }
 
@@ -251,7 +260,7 @@ namespace WindowsFormsApp3
 
                                 if (batteryError == 0)
                                 {
-                                    this.BeginInvoke(testUpdateViewGrid, new Object[] { (int)batteryIndex, batterStateC[0], batterStateC[1], batterStateC[2] });
+                                    //this.BeginInvoke(testUpdateViewGrid, new Object[] { (int)batteryIndex, batterStateC[0], batterStateC[1], batterStateC[2] });
                                 }
                                 else if (batteryError == 1) 
                                 {
@@ -307,10 +316,11 @@ namespace WindowsFormsApp3
                         getDataType = -1;                           //do nothing
 
                         GetTimestampLabel();
+#if TEXT_ENABLE
                         File.AppendAllText(fullPath, Environment.NewLine + label6.Text + " " + lable_biosBom.Text);
                         File.AppendAllText(fullPath, Environment.NewLine + label8.Text + " " + label_biosName.Text);
                         File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
-
+#endif
                         break;
 
                     case 101:    
@@ -340,14 +350,19 @@ namespace WindowsFormsApp3
                         //         Length Cmd   index        checksum
                         serialWrite(0x04, 0xB0, batteryIndex, 0x49);    //read battery ampere
                         Thread.Sleep(600);          //wait for receive data
-
+                        
+                        //for test
+                        UpdateViewGrid testUpdateViewGrid = new UpdateViewGrid(updateViewGrid);
+                        this.BeginInvoke(testUpdateViewGrid, new Object[] { 0, batterStateC[0], batterStateC[1], batterStateC[2] });
 
                         getDataType = -1;
 #if EXCEL_ENABLE
                         excelRowIndex++;
 #endif
                         GetTimestampLabel();
+#if TEXT_ENABLE
                         recordData2txt(battryStateTemp);
+#endif
                         battryStateTemp = "";
 
                         break;
@@ -418,6 +433,7 @@ namespace WindowsFormsApp3
 
                 if (error == 0)
                 {
+#if TEXT_ENABLE
                     try
                     {
                         // Check if file already exists.    
@@ -439,7 +455,7 @@ namespace WindowsFormsApp3
                     {
                         Console.WriteLine(Ex.ToString());
                     }
-
+#endif
                     Console_receiving = true;
 
                     sendData = new Thread(DoSend);

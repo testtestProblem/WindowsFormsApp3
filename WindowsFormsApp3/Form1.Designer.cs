@@ -29,24 +29,24 @@ namespace WindowsFormsApp3
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.button_openSerial = new System.Windows.Forms.Button();
             this.label_biosName = new System.Windows.Forms.Label();
             this.comboBox_comPortSelecter = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label_time = new System.Windows.Forms.Label();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.indexGrid = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.powerGrid = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.voltageGrid = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ampereGrid = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label6 = new System.Windows.Forms.Label();
             this.lable_biosBom = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox_reflashRate = new System.Windows.Forms.ComboBox();
+            this.indexGrid = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.powerGrid = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.voltageGrid = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ampereGrid = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -121,67 +121,35 @@ namespace WindowsFormsApp3
             // 
             // dataGridView1
             // 
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("PMingLiU", 15F);
-            this.dataGridView1.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle4;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("PMingLiU", 15F);
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("PMingLiU", 15F);
+            this.dataGridView1.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("PMingLiU", 15F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.indexGrid,
             this.powerGrid,
             this.voltageGrid,
             this.ampereGrid});
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("PMingLiU", 15F);
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("PMingLiU", 15F);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle3;
             this.dataGridView1.Location = new System.Drawing.Point(12, 149);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.Size = new System.Drawing.Size(508, 151);
             this.dataGridView1.TabIndex = 11;
-            // 
-            // indexGrid
-            // 
-            this.indexGrid.Frozen = true;
-            this.indexGrid.HeaderText = "index";
-            this.indexGrid.Name = "indexGrid";
-            this.indexGrid.ReadOnly = true;
-            this.indexGrid.Width = 75;
-            // 
-            // powerGrid
-            // 
-            this.powerGrid.Frozen = true;
-            this.powerGrid.HeaderText = "power";
-            this.powerGrid.Name = "powerGrid";
-            this.powerGrid.ReadOnly = true;
-            this.powerGrid.Width = 130;
-            // 
-            // voltageGrid
-            // 
-            this.voltageGrid.Frozen = true;
-            this.voltageGrid.HeaderText = "voltage(mV)";
-            this.voltageGrid.Name = "voltageGrid";
-            this.voltageGrid.ReadOnly = true;
-            this.voltageGrid.Width = 130;
-            // 
-            // ampereGrid
-            // 
-            this.ampereGrid.Frozen = true;
-            this.ampereGrid.HeaderText = "ampere(mA)";
-            this.ampereGrid.Name = "ampereGrid";
-            this.ampereGrid.ReadOnly = true;
-            this.ampereGrid.Width = 130;
             // 
             // label6
             // 
@@ -242,6 +210,38 @@ namespace WindowsFormsApp3
             this.comboBox_reflashRate.Text = "Normal";
             this.comboBox_reflashRate.Visible = false;
             // 
+            // indexGrid
+            // 
+            this.indexGrid.Frozen = true;
+            this.indexGrid.HeaderText = "index";
+            this.indexGrid.Name = "indexGrid";
+            this.indexGrid.ReadOnly = true;
+            this.indexGrid.Width = 75;
+            // 
+            // powerGrid
+            // 
+            this.powerGrid.Frozen = true;
+            this.powerGrid.HeaderText = "capacity";
+            this.powerGrid.Name = "powerGrid";
+            this.powerGrid.ReadOnly = true;
+            this.powerGrid.Width = 130;
+            // 
+            // voltageGrid
+            // 
+            this.voltageGrid.Frozen = true;
+            this.voltageGrid.HeaderText = "voltage(mV)";
+            this.voltageGrid.Name = "voltageGrid";
+            this.voltageGrid.ReadOnly = true;
+            this.voltageGrid.Width = 130;
+            // 
+            // ampereGrid
+            // 
+            this.ampereGrid.Frozen = true;
+            this.ampereGrid.HeaderText = "ampere(mA)";
+            this.ampereGrid.Name = "ampereGrid";
+            this.ampereGrid.ReadOnly = true;
+            this.ampereGrid.Width = 130;
+            // 
             // S101TG_GCS
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -277,15 +277,15 @@ namespace WindowsFormsApp3
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label_time;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn indexGrid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn powerGrid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn voltageGrid;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ampereGrid;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label lable_biosBom;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox comboBox_reflashRate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn indexGrid;
+        private System.Windows.Forms.DataGridViewTextBoxColumn powerGrid;
+        private System.Windows.Forms.DataGridViewTextBoxColumn voltageGrid;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ampereGrid;
     }
 }
 
