@@ -1,5 +1,5 @@
 ﻿#define EXCEL_DISABLE
-
+#define TEXT_ENABLE
 
 using System;
 using System.Collections.Generic;
@@ -41,6 +41,7 @@ namespace WindowsFormsApp3
         int[] batterStateC = new int[3];
         string battryStateTemp = "";
         int batteryError = 0;
+        int batteryReadError = 0;
 #if EXCEL_ENABLE
         ExcelFile workbook;
         ExcelWorksheet[] worksheet = new ExcelWorksheet[4];
@@ -102,7 +103,9 @@ namespace WindowsFormsApp3
         {
             String timeStamp = GetTimestamp(DateTime.Now);
             label_time.Text = timeStamp;
+#if TEXT_ENABLE
             File.AppendAllText(fullPath, Environment.NewLine + "time: " + timeStamp);
+#endif
         }
         public void recordData2txt(string data)
         {
@@ -182,12 +185,12 @@ namespace WindowsFormsApp3
                         }
                         else if (getDataType == 2)  //for parse battery state
                         {
-                            try
+                            if (length == 5) 
                             {
                                 if (buffer[3] == 0x3C && buffer[2] == 0xF1)
                                 {
                                     battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + "no battery\n";
-                                    batterStateC[batterStatecounter] = -1;
+                                    batterStateC[batteryIndex-1] = -1;
                                     batteryError = 1;
                                 }
                                 else
@@ -196,7 +199,7 @@ namespace WindowsFormsApp3
                                     {
                                         //     label1.Text += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
                                         battryStateTemp += "battery " + "remain power" + ": " + buffer[2].ToString() + "% battery level\n";
-                                        batterStateC[batterStatecounter] = buffer[2];
+                                        batterStateC[batteryIndex - 1] = buffer[2];
 #if EXCEL_ENABLE
                                     worksheet[batteryIndex].Cells[excelRowIndex, 0].Value = batterStateC[batterStatecounter];
 #endif
@@ -208,7 +211,7 @@ namespace WindowsFormsApp3
 
                                         //label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mV\n";
                                         battryStateTemp += "battery " + "voltage" + ": " + temp_v.ToString() + "mV\n";
-                                        batterStateC[batterStatecounter] = ((int)buffer[2] + (((int)buffer[3]) << 8));
+                                        batterStateC[batteryIndex - 1] = ((int)buffer[2] + (((int)buffer[3]) << 8));
 #if EXCEL_ENABLE
                                     worksheet[batteryIndex].Cells[excelRowIndex, 1].Value = batterStateC[batterStatecounter];
 #endif
@@ -221,7 +224,7 @@ namespace WindowsFormsApp3
 
                                         //    label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mA\n";
                                         battryStateTemp += "battery " + "ampere" + ": " + temp_a.ToString() + "mA\n";
-                                        batterStateC[batterStatecounter] = ((int)buffer[2] + (((int)buffer[3]) << 8));
+                                        batterStateC[batteryIndex - 1] = ((int)buffer[2] + (((int)buffer[3]) << 8));
 #if EXCEL_ENABLE
                                     worksheet[batteryIndex].Cells[excelRowIndex, 2].Value = batterStateC[batterStatecounter];
 #endif
@@ -229,17 +232,19 @@ namespace WindowsFormsApp3
                                     }
                                 }
                             }
-                            catch
+                            else
                             {
-                                File.AppendAllText(fullPath, Environment.NewLine + "error:" + batteryIndex.ToString() + " length:" + length.ToString() + " data:"+ buffer.ToString());
-                                for (int i = 0; i < length; i++) File.AppendAllText(fullPath, " byte" + i.ToString() + ": " + buffer[i].ToString());
+#if TEXT_ENABLE
+                                File.AppendAllText(fullPath, Environment.NewLine + "error:" + batteryIndex.ToString() + " length:" + length.ToString());
+                                for (int i = 0; i < length; i++) File.AppendAllText(fullPath, " byte" + i.ToString() + ":" + buffer[i].ToString());
                                 File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
-                                
-                                batterStatecounter = 0;
+#endif
+                                batterStateC[batteryIndex - 1] = -1;
+                                //batterStatecounter = batteryIndex-1;
                             }
 
-                            batterStatecounter++;
-                            if (batterStatecounter == 3)
+                            //batterStatecounter++;
+                            if (batterStatecounter == (batteryIndex - 1))
                             {
                                 batterStatecounter = 0;
                                 UpdateViewGrid testUpdateViewGrid = new UpdateViewGrid(updateViewGrid);
