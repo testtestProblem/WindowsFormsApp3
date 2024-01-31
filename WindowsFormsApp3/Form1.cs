@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.IO.Ports;
@@ -17,7 +18,6 @@ using System.Windows.Forms;
 using GemBox.Spreadsheet;
 using GemBox.Spreadsheet.Tables;
 #endif
-
 
 namespace WindowsFormsApp3
 {
@@ -240,6 +240,8 @@ namespace WindowsFormsApp3
                                         if (temp_a > 20000) batteryError = 1;
                                     }
                                 }
+                                Trace.WriteLine(battryStateTemp);
+
                             }
                             else
                             {
@@ -251,7 +253,7 @@ namespace WindowsFormsApp3
                                 batterStateC[batteryIndex - 1] = preBatteryPwVolAmp[batteryIndex - 1];
                                 //batterStatecounter = batteryIndex-1;
                             }
-
+                            /*
                             //batterStatecounter++;
                             if (batterStatecounter == (batteryIndex - 1))
                             {
@@ -270,7 +272,7 @@ namespace WindowsFormsApp3
 #if EXCEL_ENABLE
                                 worksheet[batteryIndex].Cells[excelRowIndex, 3].Value = GetTimestamp(DateTime.Now);
 #endif
-                            }
+                            }*/
                         }
                         Array.Resize(ref buffer, 1024);
                     }
@@ -288,6 +290,11 @@ namespace WindowsFormsApp3
 
         }
 
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
         void DoSend()
         {
             while (true)
@@ -295,7 +302,6 @@ namespace WindowsFormsApp3
                 switch (getDataType)
                 {
                     case 100:     //get BIOS BOM and BIOS name
-                        
                         lable_biosBom.Text = "";
                         getDataType = 0;                            //parse method
                         serialWrite(0x04, 0xA0, 0x00, 0x5c);        //BIOS BOM
@@ -341,19 +347,27 @@ namespace WindowsFormsApp3
                         serialWrite(0x04, 0xB0, batteryIndex, 0x4B);     //read battery remain power
                         Thread.Sleep(600);          //wait for receive data
 
-                        batteryIndex++;
+                        //batteryIndex++;
+                        batteryIndex=2;
                         //         Length Cmd   index        checksum
                         serialWrite(0x04, 0xB0, batteryIndex, 0x4A);    //read battery voltage
                         Thread.Sleep(600);          //wait for receive data
 
-                        batteryIndex++;
+                        //batteryIndex++;
+                        batteryIndex=3;
                         //         Length Cmd   index        checksum
                         serialWrite(0x04, 0xB0, batteryIndex, 0x49);    //read battery ampere
                         Thread.Sleep(600);          //wait for receive data
                         
                         //for test
                         UpdateViewGrid testUpdateViewGrid = new UpdateViewGrid(updateViewGrid);
+                        
+                        Trace.WriteLine("remain power>" + batterStateC[0] + " Voltage>" + batterStateC[1] + " ampere>" + batterStateC[2]);
+
                         this.BeginInvoke(testUpdateViewGrid, new Object[] { 0, batterStateC[0], batterStateC[1], batterStateC[2] });
+                        batterStateC[0] = 0;
+                        batterStateC[1] = 0;
+                        batterStateC[2] = 0;
 
                         getDataType = -1;
 #if EXCEL_ENABLE

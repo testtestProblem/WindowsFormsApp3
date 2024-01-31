@@ -38,15 +38,15 @@ namespace WindowsFormsApp3
             this.label3 = new System.Windows.Forms.Label();
             this.label_time = new System.Windows.Forms.Label();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.indexGrid = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.powerGrid = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.voltageGrid = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ampereGrid = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label6 = new System.Windows.Forms.Label();
             this.lable_biosBom = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox_reflashRate = new System.Windows.Forms.ComboBox();
-            this.indexGrid = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.powerGrid = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.voltageGrid = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ampereGrid = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -150,6 +150,39 @@ namespace WindowsFormsApp3
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.Size = new System.Drawing.Size(508, 151);
             this.dataGridView1.TabIndex = 11;
+            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
+            // 
+            // indexGrid
+            // 
+            this.indexGrid.Frozen = true;
+            this.indexGrid.HeaderText = "index";
+            this.indexGrid.Name = "indexGrid";
+            this.indexGrid.ReadOnly = true;
+            this.indexGrid.Width = 75;
+            // 
+            // powerGrid
+            // 
+            this.powerGrid.Frozen = true;
+            this.powerGrid.HeaderText = "capacity";
+            this.powerGrid.Name = "powerGrid";
+            this.powerGrid.ReadOnly = true;
+            this.powerGrid.Width = 130;
+            // 
+            // voltageGrid
+            // 
+            this.voltageGrid.Frozen = true;
+            this.voltageGrid.HeaderText = "voltage(mV)";
+            this.voltageGrid.Name = "voltageGrid";
+            this.voltageGrid.ReadOnly = true;
+            this.voltageGrid.Width = 130;
+            // 
+            // ampereGrid
+            // 
+            this.ampereGrid.Frozen = true;
+            this.ampereGrid.HeaderText = "ampere(mA)";
+            this.ampereGrid.Name = "ampereGrid";
+            this.ampereGrid.ReadOnly = true;
+            this.ampereGrid.Width = 130;
             // 
             // label6
             // 
@@ -209,38 +242,6 @@ namespace WindowsFormsApp3
             this.comboBox_reflashRate.TabIndex = 15;
             this.comboBox_reflashRate.Text = "Normal";
             this.comboBox_reflashRate.Visible = false;
-            // 
-            // indexGrid
-            // 
-            this.indexGrid.Frozen = true;
-            this.indexGrid.HeaderText = "index";
-            this.indexGrid.Name = "indexGrid";
-            this.indexGrid.ReadOnly = true;
-            this.indexGrid.Width = 75;
-            // 
-            // powerGrid
-            // 
-            this.powerGrid.Frozen = true;
-            this.powerGrid.HeaderText = "capacity";
-            this.powerGrid.Name = "powerGrid";
-            this.powerGrid.ReadOnly = true;
-            this.powerGrid.Width = 130;
-            // 
-            // voltageGrid
-            // 
-            this.voltageGrid.Frozen = true;
-            this.voltageGrid.HeaderText = "voltage(mV)";
-            this.voltageGrid.Name = "voltageGrid";
-            this.voltageGrid.ReadOnly = true;
-            this.voltageGrid.Width = 130;
-            // 
-            // ampereGrid
-            // 
-            this.ampereGrid.Frozen = true;
-            this.ampereGrid.HeaderText = "ampere(mA)";
-            this.ampereGrid.Name = "ampereGrid";
-            this.ampereGrid.ReadOnly = true;
-            this.ampereGrid.Width = 130;
             // 
             // S101TG_GCS
             // 
