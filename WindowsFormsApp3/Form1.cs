@@ -49,9 +49,40 @@ namespace WindowsFormsApp3
         ExcelWorksheet[] worksheet = new ExcelWorksheet[4];
         int excelRowIndex = 1;
 #endif
+        private DataTable sampleData()
+        {
+            
+            using (DataTable table = new DataTable())
+            {
+
+                /*
+                // Add rows.
+                table.Rows.Add();
+                table.Rows.Add();
+                table.Rows.Add();
+                */
+                return table;
+            }
+        }
         public S101TG_GCS()
         {
             InitializeComponent();
+            //dataGridView1.DataSource = sampleData();
+            /*
+            dataGridView2.Columns[0].Name = "Release Date";
+            dataGridView2.Columns[1].Name = "1 Date";
+            dataGridView2.Columns[2].Name = "2 Date";
+            dataGridView2.Columns[3].Name = "3 Date";
+            */
+            dataGridView1.Rows.Add("aa", "bb", "cc", "dd");
+
+            //can't choose target index 
+            dataGridView2.Rows.Add("", "", "", "");
+            //dataGridView2.Rows.Add("", "", "", "");
+            //dataGridView2.Rows.Add("", "", "", "");
+            //dataGridView2.Rows.Add("", "", "", "");
+            //dataGridView2.Rows.
+            //dataGridView2.Columns[0].DisplayIndex = 0;
         }
         public bool ClosedByXButtonOrAltF4 { get; private set; }
         
@@ -295,6 +326,22 @@ namespace WindowsFormsApp3
 
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (dataGridView2.SelectedRows.Count > 0 &&
+            dataGridView2.SelectedRows[0].Index !=
+            dataGridView2.Rows.Count - 1)
+            {
+                dataGridView2.Rows.RemoveAt(
+                    dataGridView2.SelectedRows[0].Index);
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            dataGridView2.Rows.Clear();
+        }
+
         void DoSend()
         {
             while (true)
@@ -338,8 +385,8 @@ namespace WindowsFormsApp3
                         batteryIndexCks = 0x1b;
                         batteryState = 0x00;
 
-                        this.dataGridView1.DataSource = null;
-                        this.dataGridView1.Rows.Clear();
+                        //this.dataGridView1.DataSource = null;
+                        //this.dataGridView1.Rows.Clear();
 
                         getDataType = 2;        //parse method
 
@@ -360,11 +407,19 @@ namespace WindowsFormsApp3
                         Thread.Sleep(600);          //wait for receive data
                         
                         //for test
-                        UpdateViewGrid testUpdateViewGrid = new UpdateViewGrid(updateViewGrid);
+                        //UpdateViewGrid testUpdateViewGrid = new UpdateViewGrid(updateViewGrid);
                         
                         Trace.WriteLine("remain power>" + batterStateC[0] + " Voltage>" + batterStateC[1] + " ampere>" + batterStateC[2]);
 
-                        this.BeginInvoke(testUpdateViewGrid, new Object[] { 0, batterStateC[0], batterStateC[1], batterStateC[2] });
+                        //this.BeginInvoke(testUpdateViewGrid, new Object[] { 0, batterStateC[0], batterStateC[1], batterStateC[2] });
+                        /*
+                        dataGridView1.Rows.Clear();
+                        dataGridView2.Rows[0].SetValues(new object[] { "aa", batterStateC[0], batterStateC[1], batterStateC[2] });
+                        dataGridView1.Rows.Add("0", batterStateC[0], batterStateC[1], batterStateC[2]);*/
+                        //dataGridView2.Rows.Clear();
+                        dataGridView2.Rows[0].SetValues(new object[] { "0", batterStateC[0], batterStateC[1], batterStateC[2] });
+
+                        //dataGridView2.Rows.Add("aa", batterStateC[0], batterStateC[1], batterStateC[2]);
                         batterStateC[0] = 0;
                         batterStateC[1] = 0;
                         batterStateC[2] = 0;
