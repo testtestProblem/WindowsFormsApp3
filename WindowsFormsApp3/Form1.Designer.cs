@@ -55,6 +55,7 @@ namespace WindowsFormsApp3
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Detect = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -269,6 +270,7 @@ namespace WindowsFormsApp3
             this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView2.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column1,
+            this.Detect,
             this.Column2,
             this.Column3,
             this.Column4});
@@ -283,7 +285,7 @@ namespace WindowsFormsApp3
             this.dataGridView2.Location = new System.Drawing.Point(12, 143);
             this.dataGridView2.Name = "dataGridView2";
             this.dataGridView2.RowTemplate.Height = 24;
-            this.dataGridView2.Size = new System.Drawing.Size(455, 75);
+            this.dataGridView2.Size = new System.Drawing.Size(526, 95);
             this.dataGridView2.TabIndex = 17;
             // 
             // button1
@@ -316,6 +318,13 @@ namespace WindowsFormsApp3
             this.Column1.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Column1.Width = 70;
             // 
+            // Detect
+            // 
+            this.Detect.HeaderText = "Detect";
+            this.Detect.Name = "Detect";
+            this.Detect.ReadOnly = true;
+            this.Detect.Width = 70;
+            // 
             // Column2
             // 
             this.Column2.HeaderText = "capacity";
@@ -345,7 +354,7 @@ namespace WindowsFormsApp3
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(474, 235);
+            this.ClientSize = new System.Drawing.Size(588, 268);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.dataGridView2);
@@ -393,6 +402,7 @@ namespace WindowsFormsApp3
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Detect;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;

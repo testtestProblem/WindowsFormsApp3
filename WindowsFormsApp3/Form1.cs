@@ -38,7 +38,8 @@ namespace WindowsFormsApp3
         Byte batteryIndex = 0, batteryIndexCks = 0x1b, batteryState = 0x30;
 
         int batterStatecounter = 0;
-        int[] batterStateC = new int[3];
+        string[] batterStateC = new string[3];
+        string batteryDetect = "";
         string battryStateTemp = "";
         int batteryError = 0;
         int batteryReadError = 0;
@@ -77,7 +78,7 @@ namespace WindowsFormsApp3
             dataGridView1.Rows.Add("aa", "bb", "cc", "dd");
 
             //can't choose target index 
-            dataGridView2.Rows.Add("", "", "", "");
+            dataGridView2.Rows.Add("", "", "", "", "");
             //dataGridView2.Rows.Add("", "", "", "");
             //dataGridView2.Rows.Add("", "", "", "");
             //dataGridView2.Rows.Add("", "", "", "");
@@ -224,45 +225,49 @@ namespace WindowsFormsApp3
                                 if (buffer[3] == 0x3C && buffer[2] == 0xF1)
                                 {
                                     battryStateTemp += "battery " + (batteryIndex).ToString() + ": " + "no battery\n";
-                                    batterStateC[batteryIndex-1] = -1;
+                                    batterStateC[batteryIndex] = "error";
                                     batteryError = 1;
                                 }
                                 else
                                 {
-                                    if ((buffer[1]) == 0x01)    //read battery remain power
+                                    if ((buffer[1]) == 0x01 || (buffer[1]) == 0x09)    //read battery remain power
                                     {
                                         //     label1.Text += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
                                         battryStateTemp += "battery " + "remain power" + ": " + buffer[2].ToString() + "% battery level\n";
-                                        batterStateC[batteryIndex - 1] = buffer[2];
+                                        batterStateC[0] = buffer[2].ToString();
 
                                         preBatteryPwVolAmp[0] = (int)buffer[2];
 #if EXCEL_ENABLE
                                     worksheet[batteryIndex].Cells[excelRowIndex, 0].Value = batterStateC[batterStatecounter];
 #endif
                                     }
-                                    else if ((buffer[1]) == 0x02)   //read battery voltage
+                                    else if ((buffer[1]) == 0x02 || (buffer[1]) == 0x0A)   //read battery voltage
                                     {
                                         int temp_v;
                                         temp_v = ((int)buffer[2] + (((int)buffer[3]) << 8));
 
                                         //label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mV\n";
                                         battryStateTemp += "battery " + "voltage" + ": " + temp_v.ToString() + "mV\n";
-                                        batterStateC[batteryIndex - 1] = temp_v;
+                                        batterStateC[1] = temp_v.ToString();
 
                                         preBatteryPwVolAmp[1] = temp_v;
 #if EXCEL_ENABLE
                                     worksheet[batteryIndex].Cells[excelRowIndex, 1].Value = batterStateC[batterStatecounter];
 #endif
-                                        if (temp_v > 20000) batteryError = 1;
+                                        if (temp_v > 20000)
+                                        {
+                                            batterStateC[1] = "error";
+                                            batteryError = 1;
+                                        }
                                     }
-                                    else if ((buffer[1]) == 0x03)   //read battery ampere
+                                    else if ((buffer[1]) == 0x03 || (buffer[1]) == 0x0B)   //read battery ampere
                                     {
                                         int temp_a;
                                         temp_a = ((int)buffer[2] + (((int)buffer[3]) << 8));
 
                                         //    label1.Text += "battery " + (batteryIndex).ToString() + ": " + ((int)buffer[2] + (((int)buffer[3]) << 8)).ToString() + "mA\n";
                                         battryStateTemp += "battery " + "ampere" + ": " + temp_a.ToString() + "mA\n";
-                                        batterStateC[batteryIndex - 1] = temp_a;
+                                        batterStateC[2] = temp_a.ToString();
 
                                         preBatteryPwVolAmp[2] = temp_a;
 #if EXCEL_ENABLE
@@ -270,8 +275,19 @@ namespace WindowsFormsApp3
 #endif
                                         if (temp_a > 20000) batteryError = 1;
                                     }
+                                    if ((buffer[1]) == 0x00 || (buffer[1]) == 0x08)    //read battery remain power
+                                    {
+                                        //     label1.Text += "battery " + (batteryIndex).ToString() + ": " + buffer[2].ToString() + "% power\n";
+                                        battryStateTemp += "battery " + "detect" + ": " + buffer[2].ToString() + "% battery level\n";
+                                        batteryDetect = (buffer[2] == 1) ? "Exist" : "NaN";
+
+                                        preBatteryPwVolAmp[0] = (int)buffer[2];
+#if EXCEL_ENABLE
+                                    worksheet[batteryIndex].Cells[excelRowIndex, 0].Value = batterStateC[batterStatecounter];
+#endif
+                                    }
                                 }
-                                Trace.WriteLine(battryStateTemp);
+                                //Trace.WriteLine(battryStateTemp);
 
                             }
                             else
@@ -281,7 +297,7 @@ namespace WindowsFormsApp3
                                 for (int i = 0; i < length; i++) File.AppendAllText(fullPath, " byte" + i.ToString() + ":" + buffer[i].ToString());
                                 File.AppendAllText(fullPath, Environment.NewLine + "------------------------");
 #endif
-                                batterStateC[batteryIndex - 1] = preBatteryPwVolAmp[batteryIndex - 1];
+                                //batterStateC[batteryIndex - 1] = preBatteryPwVolAmp[batteryIndex - 1];
                                 //batterStatecounter = batteryIndex-1;
                             }
                             /*
@@ -381,7 +397,7 @@ namespace WindowsFormsApp3
                         break;
 
                     case 102:     //get battery state
-                        batteryIndex = 1;
+                        
                         batteryIndexCks = 0x1b;
                         batteryState = 0x00;
 
@@ -390,6 +406,11 @@ namespace WindowsFormsApp3
 
                         getDataType = 2;        //parse method
 
+                        batteryIndex = 0;
+                        serialWrite(0x04, 0xB0, batteryIndex, 0x4C);     //read battery detect
+                        Thread.Sleep(600);          //wait for receive data
+
+                        batteryIndex = 1;
                         //         Length Cmd   index        checksum
                         serialWrite(0x04, 0xB0, batteryIndex, 0x4B);     //read battery remain power
                         Thread.Sleep(600);          //wait for receive data
@@ -409,7 +430,7 @@ namespace WindowsFormsApp3
                         //for test
                         //UpdateViewGrid testUpdateViewGrid = new UpdateViewGrid(updateViewGrid);
                         
-                        Trace.WriteLine("remain power>" + batterStateC[0] + " Voltage>" + batterStateC[1] + " ampere>" + batterStateC[2]);
+                        //Trace.WriteLine("remain power>" + batterStateC[0] + " Voltage>" + batterStateC[1] + " ampere>" + batterStateC[2]);
 
                         //this.BeginInvoke(testUpdateViewGrid, new Object[] { 0, batterStateC[0], batterStateC[1], batterStateC[2] });
                         /*
@@ -417,12 +438,41 @@ namespace WindowsFormsApp3
                         dataGridView2.Rows[0].SetValues(new object[] { "aa", batterStateC[0], batterStateC[1], batterStateC[2] });
                         dataGridView1.Rows.Add("0", batterStateC[0], batterStateC[1], batterStateC[2]);*/
                         //dataGridView2.Rows.Clear();
-                        dataGridView2.Rows[0].SetValues(new object[] { "0", batterStateC[0], batterStateC[1], batterStateC[2] });
+
+                        dataGridView2.Rows[0].SetValues(new object[] { "0", batteryDetect, batterStateC[0], batterStateC[1], batterStateC[2] });
 
                         //dataGridView2.Rows.Add("aa", batterStateC[0], batterStateC[1], batterStateC[2]);
-                        batterStateC[0] = 0;
-                        batterStateC[1] = 0;
-                        batterStateC[2] = 0;
+                        batteryDetect = "";
+                        batterStateC[0] = "";
+                        batterStateC[1] = "";
+                        batterStateC[2] = "";
+
+                        //second battery state
+
+                        batteryIndex = 0;
+                        serialWrite(0x04, 0xB0, 0x08, 0x44);     //read battery detect
+                        Thread.Sleep(600);          //wait for receive data
+
+                        batteryIndex = 1;
+                        //         Length Cmd   index        checksum
+                        serialWrite(0x04, 0xB0, 0x09, 0x43);     //read battery remain power
+                        Thread.Sleep(600);          //wait for receive data
+
+                        batteryIndex = 2;
+                        //         Length Cmd   index        checksum
+                        serialWrite(0x04, 0xB0, 0x0A, 0x42);    //read battery voltage
+                        Thread.Sleep(600);          //wait for receive data
+
+                        batteryIndex = 3;
+                        //         Length Cmd   index        checksum
+                        serialWrite(0x04, 0xB0, 0x0B, 0x41);    //read battery ampere
+                        Thread.Sleep(600);          //wait for receive data
+
+                        dataGridView2.Rows[1].SetValues(new object[] { "1", batteryDetect, batterStateC[0], batterStateC[1], batterStateC[2] });
+
+                        batterStateC[0] = "";
+                        batterStateC[1] = "";
+                        batterStateC[2] = "";
 
                         getDataType = -1;
 #if EXCEL_ENABLE
@@ -443,7 +493,7 @@ namespace WindowsFormsApp3
 
                 if (comboBox_reflashRate.Text == "Normal")
                 {
-                    Thread.Sleep(1500);  
+                    Thread.Sleep(1200);  
                     getDataType = 102;      //get battery state
                 }
                 else if (comboBox_reflashRate.Text == "Rapid")
