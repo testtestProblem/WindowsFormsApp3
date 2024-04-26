@@ -52,13 +52,13 @@ namespace WindowsFormsApp3
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox_reflashRate = new System.Windows.Forms.ComboBox();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Detect = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.SuspendLayout();
@@ -103,7 +103,12 @@ namespace WindowsFormsApp3
             "COM8",
             "COM9",
             "COM10",
-            "COM11"});
+            "COM11",
+            "COM12",
+            "COM13",
+            "COM14",
+            "COM15",
+            "COM16"});
             this.comboBox_comPortSelecter.Location = new System.Drawing.Point(340, 102);
             this.comboBox_comPortSelecter.MaxDropDownItems = 12;
             this.comboBox_comPortSelecter.Name = "comboBox_comPortSelecter";
@@ -288,28 +293,6 @@ namespace WindowsFormsApp3
             this.dataGridView2.Size = new System.Drawing.Size(526, 95);
             this.dataGridView2.TabIndex = 17;
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(285, 45);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 18;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Visible = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(414, 45);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 19;
-            this.button2.Text = "button2";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Visible = false;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
             // Column1
             // 
             this.Column1.HeaderText = "index";
@@ -349,6 +332,28 @@ namespace WindowsFormsApp3
             this.Column4.ReadOnly = true;
             this.Column4.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Column4.Width = 123;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(285, 45);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 18;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Visible = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(414, 45);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 19;
+            this.button2.Text = "button2";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Visible = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // S101TG_GCS
             // 

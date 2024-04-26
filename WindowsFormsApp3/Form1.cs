@@ -52,10 +52,8 @@ namespace WindowsFormsApp3
 #endif
         private DataTable sampleData()
         {
-            
             using (DataTable table = new DataTable())
             {
-
                 /*
                 // Add rows.
                 table.Rows.Add();
